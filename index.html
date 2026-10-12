@@ -868,6 +868,52 @@
 
     
         #copyright-notice { position: fixed; right: 8px; bottom: 6px; font-size: 12px; line-height: 1; opacity: 0.55; z-index: 9999; pointer-events: none; white-space: nowrap; }
+
+        /* ===== 九九仙人しゅぎょうのたび ===== */
+        .sennin-target {
+            font-size: 3rem;
+            color: var(--accent-color);
+            letter-spacing: 4px;
+            line-height: 1.1;
+        }
+        .sennin-found {
+            width: 100%;
+            min-height: 52px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+            align-content: flex-start;
+            margin: 2px 0 6px;
+        }
+        .sennin-chip {
+            border: 2px solid #666;
+            color: #888;
+            background: #111;
+            padding: 2px 8px;
+            font-size: 1rem;
+            min-width: 70px;
+            text-align: center;
+            font-family: 'DotGothic16';
+        }
+        .sennin-chip small {
+            display: block;
+            font-size: 0.6rem;
+            color: #aaa;
+        }
+        .sennin-chip.filled {
+            border-color: var(--success-color);
+            color: var(--success-color);
+            background: #002200;
+        }
+        .sennin-chip.missed {
+            border-color: #ff9944;
+            color: #ff9944;
+            background: #221100;
+        }
+        .sennin-input-wrong {
+            color: var(--danger-color) !important;
+        }
     </style>
 </head>
 <body id="body-root">
@@ -1143,6 +1189,60 @@
                 <button class="pixel-key clear-key" onclick="clearInput()">けす</button>
                 <button class="pixel-key" onclick="inputNumber(0)">0</button>
             </div>
+        </div>
+
+        <!-- 九九仙人 レベルセレクト画面 -->
+        <div id="sennin-select-screen" class="screen">
+            <div class="battle-header">
+                <button class="back-home-btn" onclick="showNextWorldSelect()">◀ もどる</button>
+                <span>九九仙人の しゅぎょう (Lv.1〜10)</span>
+                <span></span>
+            </div>
+            <div class="stage-list" id="sennin-list-container"></div>
+            <button class="retro-btn" onclick="showNextWorldSelect()" style="margin-top: 8px;">もどる</button>
+        </div>
+
+        <!-- 九九仙人 しゅぎょう画面 -->
+        <div id="sennin-screen" class="screen">
+            <div class="battle-header">
+                <button class="back-home-btn" onclick="leaveSennin()">◀ やめる</button>
+                <span id="sennin-title">Lv.1</span>
+                <span id="sennin-timer" style="font-weight:bold;"></span>
+            </div>
+            <div style="width:100%;">
+                <div class="enemy-info" style="width:100%; color:#8ef;">
+                    <span id="sennin-round-label">1もんめ / 5もん</span>
+                    <span id="sennin-need-label"></span>
+                </div>
+                <div class="pixel-gauge-bg" style="width:100%;">
+                    <div class="pixel-gauge-fill" id="sennin-progress" style="background: var(--accent-color); width: 0%;"></div>
+                </div>
+            </div>
+            <div class="rpg-window" style="margin-top:6px;">
+                <div class="rpg-kana" id="sennin-hint">この こたえに なる 九九は？</div>
+                <div class="rpg-problem sennin-target" id="sennin-target">20</div>
+            </div>
+            <div class="sennin-found" id="sennin-found"></div>
+            <div class="input-screen-box" id="sennin-input">？ × ？</div>
+            <div class="pixel-keypad" id="sennin-keypad">
+                <button class="pixel-key" onclick="senninDigit(1)">1</button><button class="pixel-key" onclick="senninDigit(2)">2</button><button class="pixel-key" onclick="senninDigit(3)">3</button><button class="pixel-key" onclick="senninDigit(4)">4</button><button class="pixel-key" onclick="senninDigit(5)">5</button><button class="pixel-key" onclick="senninDigit(6)">6</button><button class="pixel-key" onclick="senninDigit(7)">7</button><button class="pixel-key" onclick="senninDigit(8)">8</button><button class="pixel-key" onclick="senninDigit(9)">9</button>
+                <button class="pixel-key clear-key" style="grid-column: span 3;" onclick="senninClear()">けす</button>
+            </div>
+            <button class="retro-btn primary" id="sennin-next-btn" style="display:none;" onclick="senninNext()">つぎへ ▶</button>
+        </div>
+
+        <!-- 九九仙人 けっか画面 -->
+        <div id="sennin-result-screen" class="screen" style="justify-content: center;">
+            <h1 id="sennin-result-title" style="color: #ffcc00;">しゅぎょう たっせい！</h1>
+            <div class="dot-graphic" id="sennin-result-icon" style="margin: 8px 0;">🧙‍♂️✨</div>
+            <div class="rpg-window" style="margin: 4px 0;">
+                <p style="font-size: 0.85rem; color: #aaa;">しゅぎょうに かかった じかん</p>
+                <p class="rpg-problem" id="sennin-result-time" style="color: #55ff55; margin-top: 2px;">0びょう</p>
+                <p id="sennin-result-record" style="font-size: 0.95rem; color: #ffcc00; margin-top: 6px; font-weight: bold; min-height: 1.3em;"></p>
+                <p id="sennin-result-detail" style="font-size: 0.9rem; color: #8ef; margin-top: 6px; line-height: 1.5;"></p>
+            </div>
+            <button class="retro-btn primary" id="sennin-result-action" onclick="senninResultAction()">つぎへ</button>
+            <button class="retro-btn" onclick="showSenninSelect()" style="margin-top: 6px;">もどる</button>
         </div>
 
         <!-- 全クリア画面 -->
@@ -1567,6 +1667,9 @@
         if (typeof saveData.playCount === 'undefined') saveData.playCount = 0;
         if (!saveData.mistakeProblems || typeof saveData.mistakeProblems !== 'object') saveData.mistakeProblems = {};
         if (!saveData.practiceMastery || typeof saveData.practiceMastery !== 'object') saveData.practiceMastery = {};
+        if (!Array.isArray(saveData.senninClearedLevels)) saveData.senninClearedLevels = [];
+        if (!saveData.senninClearCounts || typeof saveData.senninClearCounts !== 'object') saveData.senninClearCounts = {};
+        if (!saveData.senninBestTimes || typeof saveData.senninBestTimes !== 'object') saveData.senninBestTimes = {};
 
         let currentStage = 1;
         let isReverseMode = false;
@@ -1838,6 +1941,15 @@
                     btn.onclick = () => alert("前のレベルを クリアすると ちょうせん できるよ！");
                 }
                 container.appendChild(btn);
+            }
+
+            // まおうじょう Lv.10 (魔王ギガデウス) をクリアしたら「九九仙人しゅぎょうのたび」が登場
+            if (saveData.clearedNextLevels.includes(10)) {
+                const senninBtn = document.createElement('div');
+                senninBtn.className = 'stage-item next-world';
+                senninBtn.textContent = "🧙 九九仙人しゅぎょうの たびへ 出る";
+                senninBtn.onclick = () => showSenninSelect();
+                container.appendChild(senninBtn);
             }
 
             switchScreen('next-world-select-screen');
@@ -3091,6 +3203,382 @@
             return name;
         }
 
+
+
+        // =====================================================
+        // 九九仙人しゅぎょうのたび
+        // 答え(例:20)が出る → あてはまる九九(4×5 / 5×4)を入力する
+        // =====================================================
+        const SENNIN_ALL = 99; // need に「ぜんぶ」を表す値
+        const SENNIN_LEVELS = {
+            1:  { name: "みならい",         rounds: 5,  maxFactor: 5, need: 1,           secPer: 0,  allowMiss: 0 },
+            2:  { name: "でし",             rounds: 6,  maxFactor: 6, need: 2,           secPer: 0,  allowMiss: 0 },
+            3:  { name: "しゅぎょうそう",   rounds: 6,  maxFactor: 7, need: 2,           secPer: 15, allowMiss: 1 },
+            4:  { name: "たけの さと",       rounds: 7,  maxFactor: 7, need: 2,           secPer: 12, allowMiss: 1 },
+            5:  { name: "たきぎょう",       rounds: 7,  maxFactor: 8, need: 3,           secPer: 12, allowMiss: 1 },
+            6:  { name: "やまごもり",       rounds: 8,  maxFactor: 8, need: 3,           secPer: 10, allowMiss: 1 },
+            7:  { name: "きりの みね",       rounds: 8,  maxFactor: 9, need: 3,           secPer: 9,  allowMiss: 1 },
+            8:  { name: "こうのうしゃ",     rounds: 8,  maxFactor: 9, need: SENNIN_ALL,  secPer: 9,  allowMiss: 1 },
+            9:  { name: "せんにん",         rounds: 9,  maxFactor: 9, need: SENNIN_ALL,  secPer: 8,  allowMiss: 1 },
+            10: { name: "九九だいせんにん", rounds: 10, maxFactor: 9, need: SENNIN_ALL,  secPer: 7,  allowMiss: 1 }
+        };
+
+        let senninLevel = 1;
+        let senninTargets = [];
+        let senninRound = 0;
+        let senninFound = [];
+        let senninA = null;
+        let senninLocked = false;
+        let senninTimerId = null;
+        let senninDeadline = 0;
+        let senninRoundStart = 0;
+        let senninActiveMs = 0;
+        let senninOkRounds = 0;
+        let senninMissRounds = 0;
+        let senninWrongCount = 0;
+        let senninInputResetTimer = null;
+
+        // n になる九九 (a,b は 1〜9) をぜんぶ返す
+        function senninExprs(n) {
+            const list = [];
+            for (let a = 1; a <= 9; a++) {
+                if (n % a === 0) {
+                    const b = n / a;
+                    if (b >= 1 && b <= 9) list.push([a, b]);
+                }
+            }
+            return list;
+        }
+
+        function senninNeedFor(lvl, n) {
+            const cfg = SENNIN_LEVELS[lvl];
+            return Math.min(cfg.need, senninExprs(n).length);
+        }
+
+        function senninTimeFor(lvl, n) {
+            const cfg = SENNIN_LEVELS[lvl];
+            if (!cfg.secPer) return 0;
+            return cfg.secPer * senninNeedFor(lvl, n) + 3;
+        }
+
+        function senninBuildTargets(lvl) {
+            const cfg = SENNIN_LEVELS[lvl];
+            const set = new Set();
+            for (let a = 1; a <= cfg.maxFactor; a++) {
+                for (let b = 1; b <= cfg.maxFactor; b++) set.add(a * b);
+            }
+            let pool = Array.from(set).filter(n => n >= 4);
+            if (cfg.need >= 2) {
+                const multi = pool.filter(n => senninExprs(n).length >= 2);
+                if (multi.length >= cfg.rounds) pool = multi;
+            }
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+            const picked = pool.slice(0, cfg.rounds);
+            while (picked.length < cfg.rounds) {
+                picked.push(pool[Math.floor(Math.random() * pool.length)]);
+            }
+            return picked;
+        }
+
+        function senninClearTimer() {
+            if (senninTimerId) {
+                clearInterval(senninTimerId);
+                senninTimerId = null;
+            }
+            if (senninInputResetTimer) {
+                clearTimeout(senninInputResetTimer);
+                senninInputResetTimer = null;
+            }
+        }
+
+        function showSenninSelect() {
+            senninClearTimer();
+            setWorldTheme(true);
+            playBGM('nextworld');
+            const container = document.getElementById('sennin-list-container');
+            container.innerHTML = '';
+            for (let lvl = 1; lvl <= 10; lvl++) {
+                const cfg = SENNIN_LEVELS[lvl];
+                const isCleared = saveData.senninClearedLevels.includes(lvl);
+                const isUnlocked = (lvl === 1) || saveData.senninClearedLevels.includes(lvl - 1);
+                const btn = document.createElement('div');
+                btn.className = `stage-item ${isUnlocked ? 'unlocked' : 'locked'} ${isCleared ? 'cleared' : ''}`;
+                const clearCount = isCleared ? Math.max(1, Number(saveData.senninClearCounts[lvl]) || 0) : 0;
+                const clearMark = isCleared ? " ★" : "";
+                const countText = isCleared ? ` (${clearCount}回クリア)` : " (0回クリア)";
+                btn.textContent = isUnlocked
+                    ? `Lv.${lvl} ${cfg.name} (${cfg.rounds}もん)${clearMark}${countText}`
+                    : `Lv.${lvl} ${cfg.name} [🔒 まえのレベルをクリアしてね]`;
+                if (isUnlocked) {
+                    btn.onclick = () => startSennin(lvl);
+                } else {
+                    btn.onclick = () => alert("前のレベルを クリアすると ちょうせん できるよ！");
+                }
+                container.appendChild(btn);
+            }
+            switchScreen('sennin-select-screen');
+        }
+
+        function startSennin(lvl) {
+            senninClearTimer();
+            setWorldTheme(true);
+            playBGM('practice');
+            senninLevel = lvl;
+            senninTargets = senninBuildTargets(lvl);
+            senninRound = 0;
+            senninActiveMs = 0;
+            senninOkRounds = 0;
+            senninMissRounds = 0;
+            senninWrongCount = 0;
+            const cfg = SENNIN_LEVELS[lvl];
+            document.getElementById('sennin-title').textContent = `Lv.${lvl} ${cfg.name}`;
+            switchScreen('sennin-screen');
+            loadSenninRound();
+        }
+
+        function senninRenderInput(wrong) {
+            const box = document.getElementById('sennin-input');
+            if (!box) return;
+            if (wrong) {
+                box.textContent = wrong;
+                box.classList.add('sennin-input-wrong');
+                return;
+            }
+            box.classList.remove('sennin-input-wrong');
+            box.textContent = `${senninA === null ? '？' : senninA} × ？`;
+        }
+
+        function senninRenderChips(reviewMode) {
+            const target = senninTargets[senninRound];
+            const need = senninNeedFor(senninLevel, target);
+            const box = document.getElementById('sennin-found');
+            box.innerHTML = '';
+            if (!reviewMode) {
+                for (let i = 0; i < need; i++) {
+                    const chip = document.createElement('div');
+                    const key = senninFound[i];
+                    chip.className = 'sennin-chip' + (key ? ' filled' : '');
+                    chip.textContent = key ? key : '？ × ？';
+                    box.appendChild(chip);
+                }
+                return;
+            }
+            // ふりかえり: このかずになる九九ぜんぶ (入れたものは緑、のこりはオレンジ)
+            senninExprs(target).forEach(([a, b]) => {
+                const key = `${a}×${b}`;
+                const chip = document.createElement('div');
+                chip.className = 'sennin-chip ' + (senninFound.includes(key) ? 'filled' : 'missed');
+                chip.textContent = `${a} × ${b}`;
+                const small = document.createElement('small');
+                small.textContent = kukuData[a][b].first + kukuData[a][b].second;
+                chip.appendChild(small);
+                box.appendChild(chip);
+            });
+        }
+
+        function loadSenninRound() {
+            senninClearTimer();
+            const total = senninTargets.length;
+            const target = senninTargets[senninRound];
+            const need = senninNeedFor(senninLevel, target);
+            senninFound = [];
+            senninA = null;
+            senninLocked = false;
+
+            document.getElementById('sennin-round-label').textContent = `${senninRound + 1}もんめ / ${total}もん`;
+            document.getElementById('sennin-progress').style.width = `${(senninRound / total) * 100}%`;
+            document.getElementById('sennin-target').textContent = target;
+            document.getElementById('sennin-hint').textContent = need <= 1
+                ? 'この こたえに なる 九九は？'
+                : `ちがう 九九を ${need}こ いれてね！`;
+            document.getElementById('sennin-need-label').textContent = need <= 1
+                ? ''
+                : (need >= senninExprs(target).length ? `ぜんぶで ${need}こ` : `${need}こ`);
+            document.getElementById('sennin-keypad').style.display = 'grid';
+            document.getElementById('sennin-next-btn').style.display = 'none';
+            senninRenderChips(false);
+            senninRenderInput();
+
+            const timerEl = document.getElementById('sennin-timer');
+            const limit = senninTimeFor(senninLevel, target);
+            senninRoundStart = Date.now();
+            if (limit > 0) {
+                senninDeadline = senninRoundStart + limit * 1000;
+                timerEl.style.display = 'inline';
+                updateSenninTimerDisplay();
+                senninTimerId = setInterval(() => {
+                    updateSenninTimerDisplay();
+                    if (Date.now() >= senninDeadline) senninTimeout();
+                }, 200);
+            } else {
+                senninDeadline = 0;
+                timerEl.textContent = '⏱️ なし';
+                timerEl.style.color = '';
+            }
+        }
+
+        function updateSenninTimerDisplay() {
+            const timerEl = document.getElementById('sennin-timer');
+            if (!timerEl || !senninDeadline) return;
+            const remaining = Math.max(0, Math.ceil((senninDeadline - Date.now()) / 1000));
+            timerEl.textContent = `⏱️ ${remaining}びょう`;
+            timerEl.style.color = remaining <= 5 ? 'var(--danger-color)' : '';
+        }
+
+        function senninDigit(d) {
+            if (senninLocked) return;
+            if (senninA === null) {
+                senninA = d;
+                senninRenderInput();
+                return;
+            }
+            const a = senninA;
+            const b = d;
+            const target = senninTargets[senninRound];
+            const key = `${a}×${b}`;
+
+            if (a * b === target) {
+                if (senninFound.includes(key)) {
+                    // おなじ九九はつかえない (3×4のあとは 4×3 など)
+                    showPopup('つかった！');
+                    senninA = null;
+                    senninRenderInput();
+                    return;
+                }
+                senninFound.push(key);
+                playHitSound();
+                showPopup('せいかい！');
+                senninA = null;
+                senninRenderChips(false);
+                senninRenderInput();
+                const need = senninNeedFor(senninLevel, target);
+                if (senninFound.length >= need) senninRoundDone(true);
+            } else {
+                senninWrongCount++;
+                playDamageSound();
+                showPopup('ちがうよ！');
+                senninLocked = true;
+                senninRenderInput(`${a} × ${b} ＝ ${a * b}`);
+                senninInputResetTimer = setTimeout(() => {
+                    senninInputResetTimer = null;
+                    senninA = null;
+                    senninLocked = false;
+                    senninRenderInput();
+                }, 900);
+            }
+        }
+
+        function senninClear() {
+            if (senninLocked) return;
+            senninA = null;
+            senninRenderInput();
+        }
+
+        function senninRoundDone(success) {
+            senninClearTimer();
+            senninLocked = true;
+            senninActiveMs += Date.now() - senninRoundStart;
+            if (success) senninOkRounds++; else senninMissRounds++;
+            const senninTimerEl = document.getElementById('sennin-timer');
+            senninTimerEl.style.color = '';
+            if (senninDeadline) senninTimerEl.textContent = '⏱️ ストップ';
+            document.getElementById('sennin-keypad').style.display = 'none';
+            senninRenderInput();
+            senninRenderChips(true);
+            document.getElementById('sennin-hint').textContent = success
+                ? 'すごい！ ほかにも こんなに あるよ'
+                : 'じかんぎれ… こたえは これだよ';
+            const isLast = senninRound >= senninTargets.length - 1;
+            const nextBtn = document.getElementById('sennin-next-btn');
+            nextBtn.textContent = isLast ? 'けっかを みる ▶' : 'つぎへ ▶';
+            nextBtn.style.display = 'block';
+        }
+
+        function senninTimeout() {
+            if (senninLocked) return;
+            playDamageSound();
+            showPopup('ざんねん！');
+            senninRoundDone(false);
+        }
+
+        function senninNext() {
+            senninRound++;
+            if (senninRound >= senninTargets.length) {
+                finishSennin();
+            } else {
+                loadSenninRound();
+            }
+        }
+
+        function leaveSennin() {
+            senninClearTimer();
+            senninLocked = true;
+            showSenninSelect();
+        }
+
+        function finishSennin() {
+            senninClearTimer();
+            const cfg = SENNIN_LEVELS[senninLevel];
+            const total = senninTargets.length;
+            const cleared = senninMissRounds <= cfg.allowMiss;
+            const elapsed = Math.max(1, Math.round(senninActiveMs / 1000));
+
+            const titleEl = document.getElementById('sennin-result-title');
+            const iconEl = document.getElementById('sennin-result-icon');
+            const timeEl = document.getElementById('sennin-result-time');
+            const recEl = document.getElementById('sennin-result-record');
+            const detailEl = document.getElementById('sennin-result-detail');
+            const actionBtn = document.getElementById('sennin-result-action');
+
+            timeEl.textContent = `${elapsed}びょう`;
+            recEl.textContent = '';
+            detailEl.innerHTML = `${total}もん中 ${senninOkRounds}もん せいかい<br>まちがい ${senninWrongCount}かい`;
+
+            if (cleared) {
+                const prevBest = Number(saveData.senninBestTimes[senninLevel]);
+                if (!Number.isFinite(prevBest) || prevBest <= 0) {
+                    recEl.textContent = 'さいしょの きろく！';
+                    saveData.senninBestTimes[senninLevel] = elapsed;
+                } else if (elapsed < prevBest) {
+                    recEl.textContent = `きろく こうしん！ (${prevBest - elapsed}びょう はやくなった)`;
+                    saveData.senninBestTimes[senninLevel] = elapsed;
+                }
+                if (!saveData.senninClearedLevels.includes(senninLevel)) saveData.senninClearedLevels.push(senninLevel);
+                saveData.senninClearCounts[senninLevel] = (Number(saveData.senninClearCounts[senninLevel]) || 0) + 1;
+                localStorage.setItem('kuku_save_data', JSON.stringify(saveData));
+                playVictoryFanfare();
+
+                titleEl.textContent = 'しゅぎょう たっせい！';
+                titleEl.style.color = '#ffcc00';
+                iconEl.textContent = '🧙‍♂️✨';
+                if (senninLevel < 10) {
+                    actionBtn.textContent = `Lv.${senninLevel + 1} に すすむ`;
+                    actionBtn.dataset.action = 'next';
+                } else {
+                    detailEl.innerHTML += '<br>🎉 九九だいせんにんに なったのじゃ！';
+                    actionBtn.textContent = 'もういちど しゅぎょう';
+                    actionBtn.dataset.action = 'retry';
+                }
+            } else {
+                playDamageSound();
+                titleEl.textContent = 'しゅぎょう ぶそく…';
+                titleEl.style.color = 'var(--danger-color)';
+                iconEl.textContent = '🧙‍♂️💦';
+                detailEl.innerHTML += `<br>じかんぎれが ${senninMissRounds}かい… もういっかい！`;
+                actionBtn.textContent = 'もういちど ちょうせん';
+                actionBtn.dataset.action = 'retry';
+            }
+            switchScreen('sennin-result-screen');
+        }
+
+        function senninResultAction() {
+            const action = document.getElementById('sennin-result-action').dataset.action;
+            if (action === 'next' && senninLevel < 10) startSennin(senninLevel + 1);
+            else startSennin(senninLevel);
+        }
 
         window.addEventListener('DOMContentLoaded', () => {
             const nameInput = document.getElementById('player-name-input');
