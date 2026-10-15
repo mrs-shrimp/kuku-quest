@@ -928,8 +928,8 @@
 
     <div id="timeout-overlay" aria-hidden="true">
         <div class="timeout-window">
-            <div class="timeout-title">じかんぎれ！</div>
-            <div class="timeout-message">90びょういないに クリアを めざそう！</div>
+            <div class="timeout-title" id="timeout-title-text">じかんぎれ！</div>
+            <div class="timeout-message" id="timeout-message-text">90びょういないに クリアを めざそう！</div>
             <button class="retro-btn primary" onclick="leaveTimeoutScreen()">でなおす</button>
         </div>
     </div>
@@ -1841,6 +1841,8 @@
         }
 
         function showGameOverScreen() {
+            clearBattleTimer();
+            battleTimeoutPending = false;
             document.getElementById('gameover-msg').textContent = "HPが ゼロで ぼうけんに でられない！";
             playBGM('battle');
             switchScreen('gameover-screen');
@@ -1984,8 +1986,19 @@
             return result;
         }
 
+        // まおうじょう: レベルごとの制限時間(秒)。Lv.10 は従来どおり90秒。
+        const NEXT_WORLD_TIME_LIMITS = { 1: 60, 2: 65, 3: 70, 4: 80, 5: 85, 6: 90, 7: 95, 8: 100, 9: 100, 10: 90 };
+        // ランダムモード: 40びょういないに ぜんぶ こたえる
+        const RANDOM_MODE_TIME_LIMIT = 40;
+        let battleTimeoutPending = false;
+
+        function getNextWorldTimeLimit(lvl) {
+            return NEXT_WORLD_TIME_LIMITS[lvl] || 90;
+        }
+
         function startNextWorldBattle(lvl) {
             clearBattleTimer();
+            battleTimeoutPending = false;
             if (saveData.hp <= 0) {
                 showGameOverScreen();
                 return;
@@ -2015,12 +2028,13 @@
             updateBattleStatusDisplay();
             switchScreen('battle-screen');
             startTime = Date.now();
-            if (lvl === 10) startBattleTimer(90);
+            startBattleTimer(getNextWorldTimeLimit(lvl));
             loadCurrentProblem();
         }
 
         function startBattle(stageNum, randomMode, nextWorld = false, reverseMode = false) {
             clearBattleTimer();
+            battleTimeoutPending = false;
             // 冒険を始めた日時を保存。トップページで「前回の冒険」として表示します。
             saveData.lastAdventureAt = new Date().toISOString();
             localStorage.setItem('kuku_save_data', JSON.stringify(saveData));
@@ -2076,6 +2090,7 @@
             updateBattleStatusDisplay();
             switchScreen('battle-screen');
             startTime = Date.now();
+            if (isRandomMode) startBattleTimer(RANDOM_MODE_TIME_LIMIT);
             loadCurrentProblem();
         }
 
@@ -2114,8 +2129,21 @@
         }
 
         function timeLimitReached() {
-            if (isAnswered) return;
+            if (isAnswered) {
+                // 正解のあとの読み上げ中などに時間がきた場合は、つぎの問題に進むときに時間切れにする
+                battleTimeoutPending = true;
+                return;
+            }
             isAnswered = true;
+            const titleEl = document.getElementById('timeout-title-text');
+            const msgEl = document.getElementById('timeout-message-text');
+            if (isRandomMode) {
+                if (titleEl) titleEl.textContent = '敵は逃げていった…';
+                if (msgEl) msgEl.textContent = `${RANDOM_MODE_TIME_LIMIT}びょういないに たおそう！`;
+            } else {
+                if (titleEl) titleEl.textContent = 'じかんぎれ！';
+                if (msgEl) msgEl.textContent = `${battleTimeLimit}びょういないに クリアを めざそう！`;
+            }
             const overlay = document.getElementById('timeout-overlay');
             if (overlay) {
                 overlay.classList.add('show');
@@ -2124,6 +2152,7 @@
         }
 
         function leaveTimeoutScreen() {
+            battleTimeoutPending = false;
             const overlay = document.getElementById('timeout-overlay');
             if (overlay) {
                 overlay.classList.remove('show');
@@ -2146,6 +2175,11 @@
 
         function loadCurrentProblem() {
             isAnswered = false;
+            if (battleTimeoutPending) {
+                battleTimeoutPending = false;
+                timeLimitReached();
+                return;
+            }
             userInputString = "";
             updateInputDisplay();
 
@@ -2311,6 +2345,7 @@
 
         function completeStage() {
             clearBattleTimer();
+            battleTimeoutPending = false;
             const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
             document.getElementById('clear-time-display').textContent = `${elapsedTime}びょう`;
             document.getElementById('earned-exp-display').textContent = `けいけんち +${stageEarnedExp} EXPを ゲット！`;
@@ -2389,6 +2424,8 @@
         }
 
         function leaveBattleToSelect() {
+            clearBattleTimer();
+            battleTimeoutPending = false;
             if (isNextWorldMode) {
                 showNextWorldSelect();
             } else {
