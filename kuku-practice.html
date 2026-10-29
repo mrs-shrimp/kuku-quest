@@ -111,16 +111,24 @@ h1{margin:0;font-size:1.5rem;letter-spacing:.04em}.sub{margin:2px 0 0;font-size:
 .qrow.dn .t{text-decoration:line-through;opacity:.55}.qrow.dn .r{color:var(--mint)}
 .wl{position:absolute;left:0;right:0;top:0;height:58%;z-index:0}.fl2{position:absolute;left:0;right:0;bottom:0;height:42%;z-index:0}
 #room::before{z-index:1}
+.mimg{width:84px;height:84px;object-fit:contain;flex:none;animation:bob 2.4s ease-in-out infinite}
+.dcard{position:relative;display:block;width:100%;padding:26px 18px;margin-bottom:16px;border-radius:28px;background:#fff;box-shadow:var(--sh);font-size:2.2rem;font-weight:900;border-left:10px solid var(--sky);text-align:left}
+.dcard.d2{border-color:var(--mint)}.dcard small{display:block;font-size:.9rem;font-weight:600;opacity:.65}
+.new{position:absolute;right:14px;top:-10px;background:var(--cor);color:#fff;border-radius:99px;padding:4px 14px;font-size:.95rem;font-weight:900;transform:rotate(6deg);animation:pulse 1.6s ease-in-out infinite;box-shadow:0 3px 0 #D9534F}
+@media (min-width:900px){#app.wide{max-width:1320px}.rgrid{display:grid;grid-template-columns:1fr 400px;gap:18px;align-items:start}#room-s .sec{display:none}#room{aspect-ratio:auto;height:calc(100vh - 170px);height:calc(100dvh - 170px);min-height:380px}.rr .tabs{flex-wrap:wrap;white-space:normal;padding-top:0}.rr .tray{max-height:calc(100vh - 420px);overflow-y:auto;padding:4px}.tr{width:84px;height:84px;font-size:2.4rem}}
+#tools{flex-wrap:wrap}.shp{padding:0}.it .em{min-height:64px;display:flex;align-items:center;justify-content:center}.tr{display:inline-flex;align-items:center;justify-content:center}
+.dim{display:flex;align-items:center;gap:8px;width:100%;font-weight:800}.dim input{flex:1;min-width:120px}.dim b{min-width:68px;text-align:right}
+.shp::after{content:"";position:absolute;inset:-14px}
 </style></head>
 <body><div id="app">
 <canvas id="fx"></canvas><div id="toast"></div>
 
 <section id="home" class="screen on">
-  <div class="hdr"><div class="mascot"><b></b><b></b><i></i><u></u><u></u><em></em><em></em><s></s></div>
+  <div class="hdr"><img class="mimg" src="https://mrs-shrimp.github.io/kuku-quest/ebizarashi.png" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="mascot" style="display:none"><b></b><b></b><i></i><u></u><u></u><em></em><em></em><s></s></div>
     <div><h1>九九とっくんのへや</h1><p class="sub"><span id="nm">ゆうしゃ</span>さん、きょうも がんばろう！</p></div></div>
-  <div class="chipR"><span class="sub">5のだんを ひたすら とっくん！</span><span class="coin">🪙 <span id="coin">0</span></span></div>
+  <div class="chipR"><span class="sub">九九を ひたすら とっくん！</span><span class="coin">🪙 <span id="coin">0</span></span></div>
   <div class="card" style="margin-top:10px"><div class="lv"><span id="lvT">Lv.1</span><span id="expT">0 / 20</span></div><div class="bar"><div id="expB"></div></div></div>
-  <button class="start" id="startBtn" onclick="show('pick')">きょうの しゅぎょうを はじめる<small id="startSub"></small></button>
+  <button class="start" id="startBtn" onclick="show('dan')">きょうの しゅぎょうを はじめる<small id="startSub"></small></button>
   <div class="card" id="qpanel" style="margin-top:0"></div>
   <div class="two"><button style="background:var(--mint)" onclick="openShop()">🛍️ ショップ</button><button style="background:var(--sky)" onclick="openRoom()">🏠 じぶんのへや</button></div>
   
@@ -136,7 +144,8 @@ h1{margin:0;font-size:1.5rem;letter-spacing:.04em}.sub{margin:2px 0 0;font-size:
   <div class="pad" id="pad"></div>
 </section>
 
-<section id="pick" class="screen"><div class="top"><button class="back" onclick="goHome()">◀ もどる</button></div><div class="sec">れんしゅうを えらぼう</div><div id="modes"></div></section>
+<section id="dan" class="screen"><div class="top"><button class="back" onclick="goHome()">◀ もどる</button></div><div class="sec">どの だんを とっくんする？</div><div id="dlist"></div></section>
+<section id="pick" class="screen"><div class="top"><button class="back" onclick="show('dan')">◀ もどる</button></div><div class="sec"><span id="pickT">5のだん</span>　れんしゅうを えらぼう</div><div id="modes"></div></section>
 <section id="pf" class="screen"><div class="top"><button class="back" onclick="quit()">◀ やめる</button><div class="dots" id="pfd"></div></div>
   <div class="card q"><div class="kana">この こたえに なる しきは？</div><div class="eq" id="pfa"></div></div><div class="cols" id="pfc"></div></section>
 <section id="mt" class="screen"><div class="top"><button class="back" onclick="quit()">◀ やめる</button></div>
@@ -148,10 +157,10 @@ h1{margin:0;font-size:1.5rem;letter-spacing:.04em}.sub{margin:2px 0 0;font-size:
 <section id="shop" class="screen"><div class="top"><button class="back" onclick="goHome()">◀ もどる</button><span style="flex:1"></span><span class="coin">🪙 <span id="scoin"></span></span></div>
   <div class="sec">ショップ</div><div class="tabs" id="stabs"></div><div class="sgrid" id="sgrid"></div></section>
 <section id="room-s" class="screen"><div class="top"><button class="back" onclick="goHome()">◀ もどる</button><span style="flex:1"></span><button class="back" onclick="openShop()">🛍️ ショップ</button></div>
-  <div class="sec">じぶんのへや</div><div id="room"></div>
-  <div id="tools"><button onclick="tool('s',.2)">➕ おおきく</button><button onclick="tool('s',-.2)">➖ ちいさく</button><button onclick="tool('del')">🧹 かたづける</button></div>
-  <div class="tabs" id="rtabs"></div><div class="tray" id="rtray"></div>
-  <div class="sws">かべ <span id="wl" class="sws" style="margin:0"></span></div><div class="sws">ゆか <span id="fl" class="sws" style="margin:0"></span></div></section>
+  <div class="sec">じぶんのへや</div><div class="rgrid"><div class="rl"><div id="room"></div>
+  <div id="tools"><button onclick="tool('r',-15)">↺ まわす</button><button onclick="tool('r',15)">↻ まわす</button><button onclick="tool('s',.2)">➕ おおきく</button><button onclick="tool('s',-.2)">➖ ちいさく</button><button onclick="tool('del')">🧹 かたづける</button><button onclick="tool('z','top')">⏫ いちばん てまえ</button><button onclick="tool('z','up')">🔼 てまえ</button><button onclick="tool('z','down')">🔽 おく</button><button onclick="tool('z','bottom')">⏬ いちばん おく</button><div id="shtools" style="display:none;width:100%;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center"></div></div>
+  </div><div class="rr"><div class="tabs" id="rtabs"></div><div class="tray" id="rtray"></div>
+  <div class="sws">かべ <span id="wl" class="sws" style="margin:0"></span></div><div class="sws">ゆか <span id="fl" class="sws" style="margin:0"></span></div></div></div></section>
 <section id="result" class="screen"><div class="card res">
   <div class="chest" id="chest">🎁</div><h1 id="rtitle">クリア！</h1><p class="sub" id="rt"></p>
   <div class="big" id="rexp"></div><div class="coin" id="rcoin" style="display:inline-block;margin-top:8px"></div><p id="rrec" style="font-weight:800;color:var(--org);min-height:1.4em"></p>
@@ -269,7 +278,7 @@ if(!Array.isArray(S.unlockedStages)||!S.unlockedStages.includes(1))S.unlockedSta
 if(!Array.isArray(S.clearedStages))S.clearedStages=[];
 S.coins=Number(S.coins)||0;if(!S.owned||typeof S.owned!=='object')S.owned={};if(!S.room||typeof S.room!=='object')S.room={};if(!Array.isArray(S.room.items))S.room.items=[];S.room.wall=S.room.wall|0;S.room.floor=S.room.floor|0;S.room.n=S.room.n|0;
 if(!S.themes||typeof S.themes!=='object')S.themes={};['wall','floor'].forEach(k=>{if(!Array.isArray(S.themes[k]))S.themes[k]=[0];if(!S.themes[k].includes(S.room[k]))S.themes[k].push(S.room[k])});
-if(!S.daily||typeof S.daily!=='object')S.daily={};S.daily=Object.assign({date:'',p:{},c:{},all:0,streak:0,lastAll:''},S.daily);
+if(!S.perfect||typeof S.perfect!=='object')S.perfect={};if(!S.daily||typeof S.daily!=='object')S.daily={};S.daily=Object.assign({date:'',p:{},c:{},all:0,streak:0,lastAll:''},S.daily);
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=id=>document.getElementById(id), need=l=>l*20;
 let AC=null,audio=null,stage=1,idx=0,input='',busy=false,combo=Number(S.currentCombo)||0,t0=0,tInt=null,earned=0,lvUp=false,mix=0;
@@ -285,26 +294,26 @@ function loop(){cx.clearRect(0,0,cv.width,cv.height);ps=ps.filter(p=>p.l>0);ps.f
 function toast(t){const e=$('toast');e.textContent=t;e.classList.remove('show');void e.offsetWidth;e.classList.add('show')}
 /* home */
 const nextStage=()=>ORDER.find(s=>!S.clearedStages.includes(s))||ORDER[Math.floor(Math.random()*9)];
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');scrollTo(0,0)}
+function show(id){if(id=='pick')renderModes();if(id=='dan')renderDan();$('app').classList.toggle('wide',id=='room-s');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');scrollTo(0,0)}
 function goHome(){clearInterval(tInt);if(audio)audio.pause();render();show('home')}
-const MODES=[['🎴','じゅんばん','1から9まで じゅんに','seq'],['🎲','ランダム','ばらばらに でるよ','rand'],['🔗','しきと こたえを むすぼう','ペアを みつけよう','match'],['🎯','こたえから しきを えらぶ','こたえに なる しきは？','pickf'],['🍎','えを みて しきを かこう','5こずつの まとまり','pic'],['⏱️','タイムアタック','60びょうで なんもん？','time'],['🔁','まちがい直し','まちがえた もんだいを もう一度','fix'],['🔊','読み方れんしゅう','きいて、声に 出してみよう','listen']];
+const MODES=[['🎴','じゅんばん','1から9まで じゅんに','seq'],['🎲','ランダム','ばらばらに でるよ','rand'],['🔗','しきと こたえを むすぼう','ペアを みつけよう','match'],['🎯','こたえから しきを えらぶ','こたえに なる しきは？','pickf'],['🍎','えを みて しきを かこう','おなじ かずずつの まとまり','pic'],['⏱️','タイムアタック','60びょうで なんもん？','time'],['🔁','まちがい直し','まちがえた もんだいを もう一度','fix'],['🔊','読み方れんしゅう','きいて、声に 出してみよう','listen']];
 function render(){
   $('nm').textContent=S.playerName;$('lvT').textContent='Lv.'+S.level;$('expT').textContent=S.exp+' / '+need(S.level);
   $('expB').style.width=Math.min(100,S.exp/need(S.level)*100)+'%';$('coin').textContent=S.coins;
-  $('startSub').textContent='れんしゅうを えらぼう';renderQuests();
+  $('startSub').textContent='だんを えらぼう';renderQuests();renderDan();$('pickT').textContent=STAGE+'のだん';
   $('modes').innerHTML=MODES.map((m,i)=>`<button class="mode m${i%3}" onclick="go('${m[3]}')"><span>${m[0]}</span><div>${m[1]}<small>${m[2]}</small></div></button>`).join('');
   $('bc').textContent=S.bestCombo;$('tc').textContent=S.totalCorrect;
 }
 const go=m=>({listen:startListen,match:startMatch,pickf:startPF,pic:startPic})[m]?({listen:startListen,match:startMatch,pickf:startPF,pic:startPic})[m]():startQuiz(m);
 /* quiz (5のだん専用) */
-const STAGE=5;let Q=[],mode='seq',fin=false,okN=0,coinsGot=0;
+let STAGE=[2,5].includes(S.selectedDan)?S.selectedDan:5;let miss=0,perfNow=false,gen=0,Q=[],mode='seq',fin=false,okN=0,coinsGot=0;
 const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
 $('pad').innerHTML=[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="key(${n})">${n}</button>`).join('')+`<button class="clr" onclick="clr()">けす</button><button onclick="key(0)">0</button><span></span>`;
-function startQuiz(m){$('pic').style.display='none';mode=m;stage=STAGE;idx=0;input='';busy=false;earned=0;lvUp=false;fin=false;okN=0;coinsGot=0;
+function startQuiz(m){gen++;miss=0;$('pic').style.display='none';mode=m;stage=STAGE;idx=0;input='';busy=false;earned=0;lvUp=false;fin=false;okN=0;coinsGot=0;
   const all=[1,2,3,4,5,6,7,8,9];
   if(m=='seq')Q=all;else if(m=='rand')Q=shuf(all);
   else if(m=='time'){Q=[];let p=0;for(let i=0;i<300;i++){let b;do{b=1+Math.floor(Math.random()*9)}while(b==p);Q.push(b);p=b}}
-  else{Q=Object.keys(S.mistakeProblems).filter(k=>k.startsWith('5x')&&(S.practiceMastery[k]||0)<2).map(k=>+k.slice(2));
+  else{Q=Object.keys(S.mistakeProblems).filter(k=>k.startsWith(STAGE+'x')&&(S.practiceMastery[k]||0)<2).map(k=>+k.slice(2));
     if(!Q.length){toast('まちがいは ないよ！✨');return}Q=shuf(Q)}
   t0=Date.now();$('dots').innerHTML=m=='time'?'<b id="cnt">0 もん</b>':Q.map(()=>'<i></i>').join('');
   show('quiz');clearInterval(tInt);
@@ -312,7 +321,7 @@ function startQuiz(m){$('pic').style.display='none';mode=m;stage=STAGE;idx=0;inp
 function load(){if(fin)return;input='';$('ans').textContent='';const e=$('eq'),b=Q[idx];e.className='eq';e.textContent=stage+' × '+b;
   $('kana').textContent=kukuData[stage][b].first;
   document.querySelectorAll('#dots i').forEach((d,i)=>d.className=i<idx?'d':i==idx?'c':'');say(1);busy=false}
-function say(n,cb){let done=false;const f=()=>{if(!done){done=true;cb&&cb()}};
+function say(n,cb){let done=false;const g=gen,f=()=>{if(!done){done=true;if(g===gen)cb&&cb()}};
   try{if(audio)audio.pause();audio=new Audio(`audio/${stage}-${Q[idx]}_${n}.wav`);audio.onended=f;audio.play().catch(f)}catch(e){f()}
   if(cb)setTimeout(f,2500)}
 function clr(){if(mode=='pic'){pA='';pdraw();return}if(!busy){input='';$('ans').textContent=''}}
@@ -326,8 +335,8 @@ function key(n){if(mode=='pic')return pkey(n);if(busy||fin||input.length>=2)retu
     if(combo>=3){const c=$('combo');c.textContent='🔥 '+combo+' れんぞく！';c.classList.remove('show');void c.offsetWidth;c.classList.add('show')}
     earned++;gain(1);S.coins++;coinsGot++;save();qEv('correct',1);qEv('combo',combo,1);if(mode=='time')$('cnt').textContent=okN+' もん';
     say(2,()=>{idx++;if(fin)return;if(idx>=Q.length)finish();else load()});
-  }else{S.mistakeProblems[k]=(S.mistakeProblems[k]||0)+1;S.practiceMastery[k]=0;combo=0;S.currentCombo=0;save();
-    sNG();const e=$('eq');e.className='eq ng';setTimeout(()=>{e.className='eq';if(fin)return;clr();say(1)},450)}}
+  }else{miss++;S.mistakeProblems[k]=(S.mistakeProblems[k]||0)+1;S.practiceMastery[k]=0;combo=0;S.currentCombo=0;save();
+    sNG();const e=$('eq'),g=gen;e.className='eq ng';setTimeout(()=>{e.className='eq';if(fin||g!==gen)return;clr();say(1)},450)}}
 function gain(a){S.exp+=a;while(S.exp>=need(S.level)){S.exp-=need(S.level);S.level++;lvUp=true}save()}
 function finish(){if(fin)return;fin=true;clearInterval(tInt);if(audio)audio.pause();
   const sec=Math.round((Date.now()-t0)/1000);let rec='',title='クリア！',sub=sec+'びょう',first=false;
@@ -337,11 +346,11 @@ function finish(){if(fin)return;fin=true;clearInterval(tInt);if(audio)audio.paus
       S.stageClearCounts[STAGE]=(S.stageClearCounts[STAGE]||0)+1;
       const old=S.stageBestTimes[STAGE],r=old==null||sec<old;if(r)S.stageBestTimes[STAGE]=sec;
       rec=old==null?'はじめての クリア！':r?'🎉 しんきろく！':''}}
-  S.playCount++;S.lastAdventureAt=new Date().toISOString();save();qEv('clear',1);qEv('mode:'+mode,1);if(mode=='time')qEv('ta',okN,1);
-  $('rtitle').textContent=title;$('rt').textContent=sub;$('rexp').textContent='+'+earned+' EXP';$('rcoin').textContent='🪙 +'+coinsGot+' コイン';$('rrec').textContent=rec;
+  S.playCount++;S.lastAdventureAt=new Date().toISOString();save();markPerfect();qEv('clear',1);qEv('mode:'+mode,1);if(mode=='time')qEv('ta',okN,1);
+  $('rtitle').textContent=title;$('rt').textContent=sub;$('rexp').textContent='+'+earned+' EXP';$('rcoin').textContent='🪙 +'+coinsGot+' コイン';$('rrec').textContent=rec+(perfNow?' ✨ ノーミス！':'');
   $('again').onclick=()=>startQuiz(mode);show('result');sWIN();burst(40,innerWidth/2,innerHeight*.3,['⭐','✨','🪙','🎉']);
   if(lvUp)setTimeout(()=>{toast('レベルアップ！ Lv.'+S.level);sUP();burst(30)},900);
-  else if(first)setTimeout(()=>toast('⭐ 5のだん クリア！'),700)}
+  else if(first)setTimeout(()=>toast('⭐ '+STAGE+'のだん クリア！'),700)}
 function leave(){quit()}
 /* 毎日クエスト */
 const pad=n=>String(n).padStart(2,'0');
@@ -365,59 +374,67 @@ function renderQuests(){dailyCheck();const d=S.daily,qs=qGen(d.date),n=qs.filter
   $('qpanel').innerHTML=`<div class="lv"><span>🎯 きょうの クエスト</span><span>${n}/3</span></div>`+qs.map(q=>{const p=Math.min(d.p[q.key]||0,q.n),dn=d.c[q.id];
     return `<div class="qrow ${dn?'dn':''}"><span class="t">${q.txt}</span><div class="bar"><div style="width:${p/q.n*100}%"></div></div><span class="r">${dn?'✓':'🪙+'+q.rw}</span></div>`}).join('')+
     `<p class="sub" style="margin:6px 0 0">${d.all?'🎉 ぜんぶ たっせい！ また あした':'ぜんぶ たっせいで ボーナス 🪙+'+bonusFor(nextStreak())}　🔥 れんぞく ${st}日</p>`}
-function quit(){fin=true;busy=false;clearInterval(tInt);if(audio)audio.pause();show('pick')}
+const PM=['seq','rand','match','pickf','pic','time'];
+const perfN=n=>PM.filter(m=>(S.perfect[n]||{})[m]).length;
+function markPerfect(){perfNow=false;if(miss>0||!PM.includes(mode))return;if(mode=='time'&&okN<9)return;
+  perfNow=true;const P=S.perfect[STAGE]=S.perfect[STAGE]||{};if(!P[mode]){P[mode]=1;save()}}
+function renderModes(){$('modes').innerHTML=MODES.map((m,i)=>`<button class="mode m${i%3}" onclick="go('${m[3]}')"><span>${m[0]}</span><div>${m[1]}<small>${m[2]}</small></div>${(S.perfect[STAGE]||{})[m[3]]?'<b style="margin-left:auto;color:var(--org)">⭐ ノーミス</b>':''}</button>`).join('')}
+function renderDan(){const c2=S.clearedStages.includes(2);
+  $('dlist').innerHTML=[5,2].map(n=>`<button class="dcard ${n==2?'d2':''}" onclick="pickDan(${n})">${n}のだん<small>${perfN(n)==PM.length?'⭐ クリアずみ':'ノーミスクリア '+perfN(n)+'/'+PM.length}</small>${n==2&&!c2?'<span class="new">NEW!</span>':''}</button>`).join('')}
+function pickDan(n){STAGE=n;S.selectedDan=n;save();$('pickT').textContent=n+'のだん';show('pick')}
+function quit(){gen++;fin=true;busy=false;clearInterval(tInt);if(audio)audio.pause();show('pick')}
 /* 新モード */
 const all9=[1,2,3,4,5,6,7,8,9],FR=['🍎','🍓','🍪','🍬','⭐','🐟','🍩','🍙','🎈'];
 function ok1(k){S.totalAnswered++;S.totalCorrect++;combo++;S.currentCombo=combo;S.bestCombo=Math.max(S.bestCombo||0,combo);S.practiceMastery[k]=(S.practiceMastery[k]||0)+1;okN++;earned++;gain(1);S.coins++;coinsGot++;save();qEv('correct',1);qEv('combo',combo,1);sOK();burst(combo>=3?18:8)}
-function ng1(k){S.totalAnswered++;S.mistakeProblems[k]=(S.mistakeProblems[k]||0)+1;S.practiceMastery[k]=0;combo=0;S.currentCombo=0;save();sNG()}
-function init(m){mode=m;stage=5;idx=0;earned=0;lvUp=false;fin=false;okN=0;coinsGot=0;busy=false;t0=Date.now();clearInterval(tInt)}
-function showRes(title,sub){gain(5);earned+=5;S.coins+=10;coinsGot+=10;S.playCount++;S.lastAdventureAt=new Date().toISOString();save();qEv('clear',1);qEv('mode:'+mode,1);if(mode=='time')qEv('ta',okN,1);
-  $('rtitle').textContent=title;$('rt').textContent=sub;$('rexp').textContent='+'+earned+' EXP';$('rcoin').textContent='🪙 +'+coinsGot+' コイン';$('rrec').textContent='';
+function ng1(k){miss++;S.totalAnswered++;S.mistakeProblems[k]=(S.mistakeProblems[k]||0)+1;S.practiceMastery[k]=0;combo=0;S.currentCombo=0;save();sNG()}
+function init(m){gen++;miss=0;mode=m;stage=STAGE;idx=0;earned=0;lvUp=false;fin=false;okN=0;coinsGot=0;busy=false;t0=Date.now();clearInterval(tInt)}
+function showRes(title,sub){gain(5);earned+=5;S.coins+=10;coinsGot+=10;S.playCount++;S.lastAdventureAt=new Date().toISOString();save();markPerfect();qEv('clear',1);qEv('mode:'+mode,1);if(mode=='time')qEv('ta',okN,1);
+  $('rtitle').textContent=title;$('rt').textContent=sub;$('rexp').textContent='+'+earned+' EXP';$('rcoin').textContent='🪙 +'+coinsGot+' コイン';$('rrec').textContent=perfNow?'✨ ノーミス！':'';
   $('again').onclick=()=>go(mode);show('result');sWIN();burst(40,innerWidth/2,innerHeight*.3,['⭐','✨','🪙','🎉']);
   if(lvUp)setTimeout(()=>{toast('レベルアップ！ Lv.'+S.level);sUP();burst(30)},900)}
 const secs=()=>Math.round((Date.now()-t0)/1000)+'びょう';
 /* こたえ→しき */
 function startPF(){init('pickf');Q=shuf(all9);show('pf');pfLoad()}
-function pfLoad(){const b=Q[idx];busy=false;$('pfa').className='eq';$('pfa').textContent=5*b;
+function pfLoad(){const b=Q[idx];busy=false;$('pfa').className='eq';$('pfa').textContent=STAGE*b;
   const ch=shuf([b].concat(shuf(all9.filter(x=>x!=b)).slice(0,3)));
-  $('pfc').innerHTML=ch.map(x=>`<button class="mb" onclick="pfPick(${x},this)">5 × ${x}</button>`).join('');
+  $('pfc').innerHTML=ch.map(x=>`<button class="mb" onclick="pfPick(${x},this)">${STAGE} × ${x}</button>`).join('');
   $('pfd').innerHTML=Q.map((_,i)=>`<i class="${i<idx?'d':i==idx?'c':''}"></i>`).join('')}
-function pfPick(x,el){if(busy)return;const b=Q[idx],k='5x'+b;
-  if(x==b){busy=true;ok1(k);el.classList.add('ok');$('pfa').className='eq ok';$('pfa').textContent='5 × '+b+' ＝ '+5*b;
-    setTimeout(()=>{if(fin)return;idx++;if(idx>=Q.length)showRes('クリア！',secs());else pfLoad()},900)}
+function pfPick(x,el){if(busy)return;const b=Q[idx],k=STAGE+'x'+b;
+  if(x==b){const g=gen;busy=true;ok1(k);el.classList.add('ok');$('pfa').className='eq ok';$('pfa').textContent=STAGE+' × '+b+' ＝ '+STAGE*b;
+    setTimeout(()=>{if(fin||g!==gen)return;idx++;if(idx>=Q.length)showRes('クリア！',secs());else pfLoad()},900)}
   else{ng1(k);el.classList.add('ng');setTimeout(()=>el.classList.remove('ng'),400)}}
 /* しき×こたえ マッチング */
 let mSel=null,mRound=0,mLeft=0;
 function startMatch(){init('match');mRound=0;show('mt');mLoad()}
 function mLoad(){const bs=shuf(all9).slice(0,5);mSel=null;mLeft=5;
-  $('ml').innerHTML=bs.map(b=>`<button class="mb" data-b="${b}" onclick="mTap(this,'l')">5 × ${b}</button>`).join('');
-  $('mr').innerHTML=shuf(bs).map(b=>`<button class="mb" data-b="${b}" onclick="mTap(this,'r')">${5*b}</button>`).join('')}
+  $('ml').innerHTML=bs.map(b=>`<button class="mb" data-b="${b}" onclick="mTap(this,'l')">${STAGE} × ${b}</button>`).join('');
+  $('mr').innerHTML=shuf(bs).map(b=>`<button class="mb" data-b="${b}" onclick="mTap(this,'r')">${STAGE*b}</button>`).join('')}
 function mTap(el,side){if(el.classList.contains('ok'))return;
   if(mSel&&mSel.side==side){mSel.el.classList.remove('on');mSel=null}
   if(!mSel){mSel={el,side};el.classList.add('on');return}
   const a=mSel.el,L=mSel.side=='l'?a:el;a.classList.remove('on');mSel=null;
-  if(a.dataset.b==el.dataset.b){ok1('5x'+L.dataset.b);a.classList.add('ok');el.classList.add('ok');
-    if(--mLeft==0)setTimeout(()=>{if(fin)return;mRound++;if(mRound>=2)showRes('クリア！',secs());else mLoad()},700)}
-  else{ng1('5x'+L.dataset.b);[a,el].forEach(x=>{x.classList.add('ng');setTimeout(()=>x.classList.remove('ng'),400)})}}
+  if(a.dataset.b==el.dataset.b){const g=gen;ok1(STAGE+'x'+L.dataset.b);a.classList.add('ok');el.classList.add('ok');
+    if(--mLeft==0)setTimeout(()=>{if(fin||g!==gen)return;mRound++;if(mRound>=2)showRes('クリア！',secs());else mLoad()},700)}
+  else{ng1(STAGE+'x'+L.dataset.b);[a,el].forEach(x=>{x.classList.add('ng');setTimeout(()=>x.classList.remove('ng'),400)})}}
 /* えを みて しきを かく */
 let pB='',pA='',pStep=0;
 function startPic(){init('pic');Q=shuf(all9);$('dots').innerHTML=Q.map(()=>'<i></i>').join('');show('quiz');
   tInt=setInterval(()=>$('tm').textContent=Math.floor((Date.now()-t0)/1000),250);pload()}
-function pload(){const b=Q[idx];pStep=0;pB='';pA='';busy=false;$('kana').textContent='5こずつ はいっているよ';
-  $('pic').style.display='grid';$('pic').innerHTML=Array(b).fill('<div class="bx">'+FR[b-1].repeat(5)+'</div>').join('');
+function pload(){const b=Q[idx];pStep=0;pB='';pA='';busy=false;$('kana').textContent=STAGE+'こずつ はいっているよ';
+  $('pic').style.display='grid';$('pic').innerHTML=Array(b).fill('<div class="bx">'+FR[b-1].repeat(STAGE)+'</div>').join('');
   $('eq').className='eq';document.querySelectorAll('#dots i').forEach((d,i)=>d.className=i<idx?'d':i==idx?'c':'');pdraw()}
-function pdraw(){$('eq').textContent='5 × '+(pB||'？')+' ＝ '+(pA||'？');$('ans').textContent=pStep?pA:pB}
-function pkey(n){if(busy||fin)return;const b=Q[idx],k='5x'+b,e=$('eq'),shake=()=>{e.className='eq ng';setTimeout(()=>{e.className='eq'},400)};
+function pdraw(){$('eq').textContent=STAGE+' × '+(pB||'？')+' ＝ '+(pA||'？');$('ans').textContent=pStep?pA:pB}
+function pkey(n){if(busy||fin)return;const b=Q[idx],k=STAGE+'x'+b,e=$('eq'),shake=()=>{e.className='eq ng';setTimeout(()=>{e.className='eq'},400)};
   if(pStep==0){if(!n)return;if(n==b){pB=''+n;pStep=1;tone(784,.1);pdraw()}else{ng1(k);shake()}return}
-  if(pA.length>=2)return;pA+=n;pdraw();const ans=5*b;if(pA.length<(ans>=10?2:1))return;
-  if(+pA==ans){busy=true;ok1(k);e.className='eq ok';$('kana').textContent=kukuData[5][b].first+kukuData[5][b].second;
+  if(pA.length>=2)return;pA+=n;pdraw();const ans=STAGE*b;if(pA.length<(ans>=10?2:1))return;
+  if(+pA==ans){busy=true;ok1(k);e.className='eq ok';$('kana').textContent=kukuData[STAGE][b].first+kukuData[STAGE][b].second;
     say(2,()=>{idx++;if(fin)return;if(idx>=Q.length){fin=true;clearInterval(tInt);showRes('クリア！',secs())}else pload()})}
   else{ng1(k);shake();setTimeout(()=>{pA='';pdraw()},400)}}
 /* 読み方れんしゅう */
 let li=1,lShow=false;
 function startListen(){li=1;lShow=false;show('listen');lrender();lsay(1)}
-function lrender(){const d=kukuData[5][li];$('lq').textContent='5 × '+li;$('lk').textContent=lShow?d.first+d.second:d.first;$('la').textContent=lShow?'＝ '+5*li:'？'}
-function lsay(n){stage=5;Q=[li];idx=0;say(n)}
+function lrender(){const d=kukuData[STAGE][li];$('lq').textContent=STAGE+' × '+li;$('lk').textContent=lShow?d.first+d.second:d.first;$('la').textContent=lShow?'＝ '+STAGE*li:'？'}
+function lsay(n){stage=STAGE;Q=[li];idx=0;say(n)}
 function lflip(){lShow=!lShow;lrender();lsay(lShow?2:1)}
 function lnext(d){li=(li-1+d+9)%9+1;lShow=false;lrender();lsay(1)}
 /* ショップ・へや */
@@ -431,8 +448,9 @@ const CATS=[
 ['がくもん','📚 ほん 20,✏️ えんぴつ 8,🎒 ランドセル 40,🔭 ぼうえんきょう 60,🔬 けんびきょう 60,🌍 ちきゅうぎ 50,🎨 パレット 25,🎹 ピアノ 80,🎸 ギター 60,🥁 ドラム 50,🎺 トランペット 50,🎻 バイオリン 60,📐 じょうぎ 12,🧮 そろばん 30,📖 ずかん 25,🎤 マイク 30'],
 ['しぜん','☀️ たいよう 20,🌈 にじ 40,☁️ くも 10,❄️ ゆき 12,⛄ ゆきだるま 30,⚡ かみなり 20,🌊 なみ 25,🔥 ほのお 20,💧 しずく 8,🌋 かざん 60,🏔️ やま 50,🏝️ しま 70,🪐 わくせい 70,☄️ すいせい 50,🌟 かがやくほし 30'],
 ['たからもの','🎁 プレゼント 25,💎 ほうせき 100,👑 かんむり 150,💰 おかね 60,🗝️ かぎ 30,🏆 トロフィー 120,🪙 コイン 10,💍 ゆびわ 90,🧰 どうぐばこ 30,🔮 クリスタル 80,📜 まきもの 25,⚔️ つるぎ 70,🛡️ たて 60,🏰 おしろ 250,🧞 まじん 200'],
-['バッジ','🏅 メダル 20,🥇 1ばん 30,🥈 2ばん 25,🥉 3ばん 20,🎖️ くんしょう 40,💯 100てん 50,🔥 がんばり 30,🚀 ロケット 60,🎯 めいちゅう 35,🧠 のうみそ 45,📚 ほんのむし 30,✍️ かきとり 25,🎓 はかせ 90,🦸 ヒーロー 80,🦄 ユニコーン 100,🐲 ドラゴン 120,🦉 ふくろう 50,🦅 わし 70,🦈 サメ 80,🐅 とら 70,🦖 きょうりゅう 100,🧙 まほうつかい 90,🥷 にんじゃ 90,🤖 ロボ 70,👾 インベーダー 60,💫 きらきら 40,✨ ピカピカ 30,🌈 にじ 50,🍀 ラッキー 35,🔔 ベル 20,🛡️ まもり 55,🏹 ゆみ 55,🪄 まほうのつえ 85,🧿 おまもり 40,♾️ むげん 150,💎 ダイヤ 200,👑 おうさま 250,🌠 ながれぼし 120,🎺 ファンファーレ 60,🏁 ゴール 45']];
-const ITEMS=[];CATS.forEach((c,ci)=>c[1].split(',').forEach((s,i)=>{const [e,n,p]=s.split(' ');ITEMS.push({id:ci+'_'+i,e,n,p:Math.max(5,Math.round(+p*3/5)*5),c:ci,bd:c[0]=='バッジ'})}));
+['バッジ','🏅 メダル 20,🥇 1ばん 30,🥈 2ばん 25,🥉 3ばん 20,🎖️ くんしょう 40,💯 100てん 50,🔥 がんばり 30,🚀 ロケット 60,🎯 めいちゅう 35,🧠 のうみそ 45,📚 ほんのむし 30,✍️ かきとり 25,🎓 はかせ 90,🦸 ヒーロー 80,🦄 ユニコーン 100,🐲 ドラゴン 120,🦉 ふくろう 50,🦅 わし 70,🦈 サメ 80,🐅 とら 70,🦖 きょうりゅう 100,🧙 まほうつかい 90,🥷 にんじゃ 90,🤖 ロボ 70,👾 インベーダー 60,💫 きらきら 40,✨ ピカピカ 30,🌈 にじ 50,🍀 ラッキー 35,🔔 ベル 20,🛡️ まもり 55,🏹 ゆみ 55,🪄 まほうのつえ 85,🧿 おまもり 40,♾️ むげん 150,💎 ダイヤ 200,👑 おうさま 250,🌠 ながれぼし 120,🎺 ファンファーレ 60,🏁 ゴール 45'],
+['かたち','▭ ちょうほうけい 50,◼ せいほうけい 50,◣ ちょくかくさんかっけい 50']];
+const ITEMS=[];CATS.forEach((c,ci)=>c[1].split(',').forEach((s,i)=>{const [e,n,p]=s.split(' ');ITEMS.push({id:ci+'_'+i,e,n,p:Math.max(5,Math.round(+p*3/5)*5),c:ci,bd:c[0]=='バッジ',shape:c[0]=='かたち'?['rect','square','tri'][i]:null})}));
 const byId=id=>ITEMS.find(i=>i.id==id);
 const WALLS=[['ピンク','#FFE3EC',0],['そらいろ','#DDF1FF',60],['みどり','#E2F7E6',60],['きいろ','#FFF1C9',60],['むらさき','#EBE3FF',60],['しろ','#FFFFFF',60],['オレンジ','#FFD9C2',60],['ミント','#C9F0EC',60],
 ['ストライプ ピンク','repeating-linear-gradient(90deg,#FFE3EC 0 20px,#fff 20px 40px)',150],['ストライプ あお','repeating-linear-gradient(90deg,#DDF1FF 0 20px,#fff 20px 40px)',150],['もり','repeating-linear-gradient(90deg,#CDEBC8 0 18px,#E4F5DF 18px 36px)',150],['うみ','linear-gradient(#BFE9FF,#E8F8FF)',120],['ゆうやけ','linear-gradient(#FFD0A8,#FFE6CC)',120],['みずたま','radial-gradient(#FFB3C7 20%,transparent 21%) 0 0/28px 28px,#FFF0F5',200],['チェック','conic-gradient(#FFF3C4 25%,#fff 0 50%,#FFF3C4 0 75%,#fff 0) 0 0/40px 40px',200],['ほし','radial-gradient(#FFD23F 12%,transparent 13%) 0 0/34px 34px,#FFF9E0',250],['さくら','radial-gradient(#FFC0D6 14%,transparent 15%) 0 0/30px 30px,radial-gradient(#FFC0D6 14%,transparent 15%) 15px 15px/30px 30px,#FFF4F8',350],['にじ','linear-gradient(#FFD1D1,#FFE9C9,#FFFAC9,#D4F5D4,#D0E8FF,#E3D9FF)',400]].map(a=>({n:a[0],b:a[1],p:a[2]}));
@@ -446,15 +464,15 @@ function setShop(i){shopC=i;drawShop()}
 function drawShop(){tabs('stabs',shopC,'setShop',1);$('scoin').textContent=S.coins;
   if(shopC>=CATS.length){$('sgrid').innerHTML=themeShop(shopC==CATS.length?'wall':'floor');return}
   $('sgrid').innerHTML=ITEMS.filter(i=>i.c==shopC).map(i=>{const o=S.owned[i.id]||0,ok=S.coins>=i.p;
-    return `<div class="it ${i.bd?'bd':''}"><div class="em">${i.e}</div><b>${i.n}</b><span>${o?'もってる ×'+o:'まだ ない'}</span><button class="buy ${ok?'':'no'}" onclick="buy('${i.id}')">🪙 ${i.p} ${ok?'かう':'<small>あと '+(i.p-S.coins)+'</small>'}</button></div>`}).join('')}
+    return `<div class="it ${i.bd?'bd':''}"><div class="em">${ico(i)}</div><b>${i.n}</b><span>${o?'もってる ×'+o:'まだ ない'}</span><button class="buy ${ok?'':'no'}" onclick="buy('${i.id}')">🪙 ${i.p} ${ok?'かう':'<small>あと '+(i.p-S.coins)+'</small>'}</button></div>`}).join('')}
 function buy(id){const i=byId(id);if(!i)return;if(S.coins<i.p){sNG();toast('コインが たりないよ\nあと '+(i.p-S.coins)+' 🪙');return}
   S.coins-=i.p;S.owned[id]=(S.owned[id]||0)+1;save();sOK();burst(14);toast(i.e+' ゲット！\nへやに かざろう');drawShop()}
 function openRoom(){sel=null;show('room-s');drawRoom()}
 function setRoom(i){roomC=i;drawRoom()}
-function drawRoom(){const R=S.room,rm=$('room'),w=rm.clientWidth||320;
-  rm.innerHTML=`<div class="wl" style="background:${(WALLS[R.wall]||WALLS[0]).b}"></div><div class="fl2" style="background:${(FLOORS[R.floor]||FLOORS[0]).b}"></div>`+R.items.map(o=>{const i=byId(o.id);return i?`<div class="pi ${i.bd?'bd':''} ${o.u==sel?'sel':''}" data-u="${o.u}" style="left:${o.x*100}%;top:${o.y*100}%;font-size:${Math.round(w*.12*o.s)}px;z-index:${Math.round(o.y*100)}">${i.e}</div>`:''}).join('');
-  $('tools').style.visibility=sel?'visible':'hidden';tabs('rtabs',roomC,'setRoom');
-  $('rtray').innerHTML=ITEMS.filter(i=>i.c==roomC&&S.owned[i.id]).map(i=>{const r=S.owned[i.id]-placed(i.id);return `<button class="tr ${r>0?'':'no'}" onclick="put('${i.id}')">${i.e}<small>×${r}</small></button>`}).join('')||'<p class="tip">ショップで かざりを かおう！</p>';
+function drawRoom(){const R=S.room,rm=$('room'),w=Math.min(rm.clientWidth,rm.clientHeight*1.5)||320;
+  rm.innerHTML=`<div class="wl" style="background:${(WALLS[R.wall]||WALLS[0]).b}"></div><div class="fl2" style="background:${(FLOORS[R.floor]||FLOORS[0]).b}"></div>`+R.items.map(o=>{const i=byId(o.id);return i?itemHTML(o,i,w):''}).join('');
+  $('tools').style.visibility=sel?'visible':'hidden';toolsDraw();tabs('rtabs',roomC,'setRoom');
+  $('rtray').innerHTML=ITEMS.filter(i=>i.c==roomC&&S.owned[i.id]).map(i=>{const r=S.owned[i.id]-placed(i.id);return `<button class="tr ${r>0?'':'no'}" onclick="put('${i.id}')">${ico(i)}<small>×${r}</small></button>`}).join('')||'<p class="tip">ショップで かざりを かおう！</p>';
   $('wl').innerHTML=WALLS.map((t,i)=>S.themes.wall.includes(i)?`<button class="sw ${i==R.wall?'on':''}" style="background:${t.b}" onclick="theme('wall',${i})"></button>`:'').join('');
   $('fl').innerHTML=FLOORS.map((t,i)=>S.themes.floor.includes(i)?`<button class="sw ${i==R.floor?'on':''}" style="background:${t.b}" onclick="theme('floor',${i})"></button>`:'').join('')}
 function theme(k,i){if(!S.themes[k].includes(i))return;S.room[k]=i;save();drawRoom()}
@@ -465,14 +483,38 @@ function buyTheme(k,i){const t=(k=='wall'?WALLS:FLOORS)[i];if(!t||S.themes[k].in
   S.coins-=t.p;S.themes[k].push(i);save();sOK();burst(14);toast('🎨 '+t.n+' ゲット！\nへやで えらぼう');drawShop()}
 function put(id){const R=S.room;if(placed(id)>=(S.owned[id]||0)){toast('ぜんぶ おいてるよ！\nショップで かおう');return}
   if(R.items.length>=80){toast('へやが いっぱい！');return}
-  R.n++;R.items.push({u:R.n,id,x:.3+Math.random()*.4,y:.45+Math.random()*.4,s:1});sel=R.n;save();drawRoom()}
-function tool(a,d){const R=S.room,o=R.items.find(o=>o.u==sel);if(!o)return;
-  if(a=='del'){R.items=R.items.filter(x=>x!=o);sel=null}else o.s=Math.min(2.4,Math.max(.6,Math.round((o.s+d)*10)/10));save();drawRoom()}
+  R.n++;R.items.push({u:R.n,id,x:.3+Math.random()*.4,y:.45+Math.random()*.4,s:1,r:0,...(byId(id).shape?{col:4,w:byId(id).shape=='rect'?197:156,h:byId(id).shape=='rect'?123:156}:{})});sel=R.n;save();drawRoom()}
+const PAL=['#FF8FA3','#FFB26B','#FFD93D','#7BD88F','#5BC0EB','#8E9AF0','#C792EA','#FFFFFF','#CFD8DC','#8D6E63','#FF6B6B','#3DCBA0'];
+const SHP={rect:'0,0 100,0 100,100 0,100',square:'0,0 100,0 100,100 0,100',tri:'0,0 0,100 100,100'};
+const shSvg=(sh,col)=>`<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style="display:block;overflow:visible"><polygon points="${SHP[sh]}" fill="${PAL[col|0]}" stroke="#000" stroke-width="2.5" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/></svg>`;
+const shStyle=(sh,col)=>`background:${PAL[col|0]};${sh=='tri'?'clip-path:polygon(0 0,0 100%,100% 100%)':''}`;
+function ico(i){if(!i.shape)return i.e;const d={rect:[60,38],square:[44,44],tri:[48,44]}[i.shape];return `<div style="width:${d[0]}px;height:${d[1]}px">${shSvg(i.shape,4)}</div>`}
+const roomW=()=>{const r=$('room');return Math.min(r.clientWidth,r.clientHeight*1.5)||320};
+const dpx=(v,w)=>Math.max(1,v*w/1000),cl=v=>Math.min(1500,Math.max(1,Math.round(v*10)/10));
+function shapeDef(o){if(o.w==null){const q=Math.sqrt(o.ar||1),b=156*(o.s||1);o.w=cl(b*q);o.h=cl(b/q)}}
+function itemHTML(o,i,w){const base=w*.12*(o.s||1),cls=`pi ${i.bd?'bd':''} ${o.u==sel?'sel':''}`,
+  pos=`left:${o.x*100}%;top:${o.y*100}%;z-index:${S.room.items.indexOf(o)+2};transform:translate(-50%,-50%) rotate(${o.r||0}deg)`;
+  if(i.shape){shapeDef(o);return `<div class="${cls} shp" data-u="${o.u}" style="${pos};width:${dpx(o.w,w)}px;height:${dpx(o.h,w)}px">${shSvg(i.shape,o.col)}</div>`}
+  return `<div class="${cls}" data-u="${o.u}" style="${pos};font-size:${Math.round(base)}px">${i.e}</div>`}
+function toolsDraw(){const o=S.room.items.find(o=>o.u==sel),i=o&&byId(o.id),el=$('shtools');if(!i||!i.shape){el.style.display='none';return}
+  const w=roomW();shapeDef(o);el.style.display='flex';
+  const row=(k,lab)=>`<div class="dim">${lab}<button onclick="tool('${k}',-1)">−</button><input type="range" min="1" max="1500" value="${o[k]}" oninput="setDim('${k}',this.value)"><button onclick="tool('${k}',1)">＋</button><b id="v_${k}">${dpx(o[k],w).toFixed(1)}px</b></div>`;
+  el.innerHTML=row('w','よこ')+row('h','たて')+`<div style="width:100%;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">`+PAL.map((c,k)=>`<button class="sw ${k==(o.col|0)?'on':''}" style="background:${c}" onclick="tool('col',${k})"></button>`).join('')+`</div>`}
+function setDim(k,v){const o=S.room.items.find(o=>o.u==sel);if(!o)return;o[k]=cl(+v);const w=roomW(),el=$('room').querySelector(`[data-u="${o.u}"]`);
+  if(el)el.style[k=='w'?'width':'height']=dpx(o[k],w)+'px';const b=$('v_'+k);if(b)b.textContent=dpx(o[k],w).toFixed(1)+'px';save()}
+function tool(a,d){const R=S.room,o=R.items.find(o=>o.u==sel);if(!o)return;const i=byId(o.id),sh=i&&i.shape;if(sh)shapeDef(o);
+  if(a=='del'){R.items=R.items.filter(x=>x!=o);sel=null}
+  else if(a=='s'){if(sh){const f=d>0?1.2:1/1.2;o.w=cl(o.w*f);o.h=cl(o.h*f)}else o.s=Math.min(2.4,Math.max(.6,Math.round(((o.s||1)+d)*10)/10))}
+  else if(a=='r')o.r=((o.r||0)+d+360)%360;
+  else if(a=='w'||a=='h')o[a]=cl(o[a]+d);
+  else if(a=='col')o.col=d;
+  else if(a=='z'){const k=R.items.indexOf(o);R.items.splice(k,1);const n=d=='top'?R.items.length:d=='bottom'?0:d=='up'?Math.min(R.items.length,k+1):Math.max(0,k-1);R.items.splice(n,0,o)}
+  save();drawRoom()}
 (function(){const rm=$('room');
   rm.addEventListener('pointerdown',e=>{const t=e.target.closest('.pi');sel=t?+t.dataset.u:null;drag=t?S.room.items.find(o=>o.u==sel):null;drawRoom();if(drag){try{rm.setPointerCapture(e.pointerId)}catch(x){}}});
   rm.addEventListener('pointermove',e=>{if(!drag)return;const r=rm.getBoundingClientRect();
     drag.x=Math.min(.95,Math.max(.05,(e.clientX-r.left)/r.width));drag.y=Math.min(.95,Math.max(.08,(e.clientY-r.top)/r.height));
-    const el=rm.querySelector(`[data-u="${drag.u}"]`);if(el){el.style.left=drag.x*100+'%';el.style.top=drag.y*100+'%';el.style.zIndex=Math.round(drag.y*100)}});
+    const el=rm.querySelector(`[data-u="${drag.u}"]`);if(el){el.style.left=drag.x*100+'%';el.style.top=drag.y*100+'%'}});
   const up=()=>{if(drag){drag=null;save()}};rm.addEventListener('pointerup',up);rm.addEventListener('pointercancel',up);
   addEventListener('resize',()=>{if($('room-s').classList.contains('on'))drawRoom()})})();
 render();
