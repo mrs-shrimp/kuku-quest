@@ -119,6 +119,9 @@ h1{margin:0;font-size:1.5rem;letter-spacing:.04em}.sub{margin:2px 0 0;font-size:
 #tools{flex-wrap:wrap}.shp{padding:0}.it .em{min-height:64px;display:flex;align-items:center;justify-content:center}.tr{display:inline-flex;align-items:center;justify-content:center}
 .dim{display:flex;align-items:center;gap:8px;width:100%;font-weight:800}.dim input{flex:1;min-width:120px}.dim b{min-width:68px;text-align:right}
 .shp::after{content:"";position:absolute;inset:-14px}
+.ch{width:122px;padding:8px 4px;border-radius:18px;background:#fff;box-shadow:var(--sh);font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px}
+.ch img{width:84px;height:84px;object-fit:contain}.ch small{font-size:.68rem;line-height:1.25;text-align:center}.ch b{font-size:.78rem;color:var(--org)}
+.ch.on{outline:4px solid var(--mint)}.ch.no{opacity:.45}.ch.no img{filter:grayscale(1)}
 </style></head>
 <body><div id="app">
 <canvas id="fx"></canvas><div id="toast"></div>
@@ -279,6 +282,15 @@ if(!Array.isArray(S.clearedStages))S.clearedStages=[];
 S.coins=Number(S.coins)||0;if(!S.owned||typeof S.owned!=='object')S.owned={};if(!S.room||typeof S.room!=='object')S.room={};if(!Array.isArray(S.room.items))S.room.items=[];S.room.wall=S.room.wall|0;S.room.floor=S.room.floor|0;S.room.n=S.room.n|0;
 if(!S.themes||typeof S.themes!=='object')S.themes={};['wall','floor'].forEach(k=>{if(!Array.isArray(S.themes[k]))S.themes[k]=[0];if(!S.themes[k].includes(S.room[k]))S.themes[k].push(S.room[k])});
 if(!S.perfect||typeof S.perfect!=='object')S.perfect={};if(!S.daily||typeof S.daily!=='object')S.daily={};S.daily=Object.assign({date:'',p:{},c:{},all:0,streak:0,lastAll:''},S.daily);
+const IMG='https://mrs-shrimp.github.io/kuku-quest/';
+const AV=[['girl-1','ククリン（しんまいゆうしゃのすがた）',1],['boy-1','ククル（しんまいゆうしゃのすがた）',1],['girl-2','ククリン（かけだしゆうしゃのすがた）',5],['boy-2','ククル（かけだしゆうしゃのすがた）',5],['girl-3','ククリン（たびするゆうしゃのすがた）',8],['boy-3','ククル（たびするゆうしゃのすがた）',8],['girl-4','ククリン（せいちょうしたゆうしゃのすがた）',11],['boy-4','ククル（せいちょうしたゆうしゃのすがた）',11],['girl-5','ククリン（たたかうゆうしゃのすがた）',14],['boy-5','ククル（たたかうゆうしゃのすがた）',14],['girl-6','ククリン（まほうせんしのすがた）',16],['boy-6','ククル（まほうせんしのすがた）',16],['girl-7','ククリン（きらめきのまほうせんしのすがた）',18],['boy-7','ククル（きらめきのまほうせんしのすがた）',18],['girl-8','ククリン（でんせつのまほうせんしのすがた）',20],['boy-8','ククル（でんせつのまほうせんしのすがた）',20]].map(a=>({path:'image/'+a[0]+'.png',name:a[1],minLevel:a[2]}));
+const PETS=[['pet-1','えびざらし',1],['pet-2','わさびん',5],['pet-3','つよいえびざらし',10],['pet-4','えびざらしとわさびん',15],['pet-5','つよいえびざらしとわさびん',20]].map(a=>({path:'image/'+a[0]+'.png',name:a[1],minLevel:a[2]}));
+let formUp=false;
+function latestAt(L,cur,lv){const g=cur.includes('/girl-')?'/girl-':'/boy-',e=L.filter(x=>x.minLevel<=lv&&(L===PETS||x.path.includes(g)));return e.length?e[e.length-1].path:cur}
+function validateForms(){const lv=Number(S.level)||1;[['heroIcon',AV,'image/boy-1.png'],['companionIcon',PETS,'image/pet-1.png']].forEach(([k,L,d])=>{const c=L.find(x=>x.path===S[k]);if(!c)S[k]=d;else if(c.minLevel>lv)S[k]=latestAt(L,S[k],lv)})}
+function autoUpgrade(){const lv=Number(S.level)||1,pv=Number(S.formLv)||0;
+  if(pv&&lv>pv)[['heroIcon',AV],['companionIcon',PETS]].forEach(([k,L])=>{if(S[k]===latestAt(L,S[k],pv)){const n=latestAt(L,S[k],lv);if(n!==S[k]){S[k]=n;formUp=true}}});S.formLv=lv}
+validateForms();autoUpgrade();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const $=id=>document.getElementById(id), need=l=>l*20;
 let AC=null,audio=null,stage=1,idx=0,input='',busy=false,combo=Number(S.currentCombo)||0,t0=0,tInt=null,earned=0,lvUp=false,mix=0;
@@ -300,7 +312,7 @@ const MODES=[['🎴','じゅんばん','1から9まで じゅんに','seq'],['�
 function render(){
   $('nm').textContent=S.playerName;$('lvT').textContent='Lv.'+S.level;$('expT').textContent=S.exp+' / '+need(S.level);
   $('expB').style.width=Math.min(100,S.exp/need(S.level)*100)+'%';$('coin').textContent=S.coins;
-  $('startSub').textContent='だんを えらぼう';renderQuests();renderDan();$('pickT').textContent=STAGE+'のだん';
+  $('startSub').textContent='だんを えらぼう';renderQuests();renderDan();$('pickT').textContent=STAGE+'のだん';if(formUp){formUp=false;setTimeout(()=>toast('✨ すがたが かわったよ！\nじぶんのへやで みてみよう'),700)}
   $('modes').innerHTML=MODES.map((m,i)=>`<button class="mode m${i%3}" onclick="go('${m[3]}')"><span>${m[0]}</span><div>${m[1]}<small>${m[2]}</small></div></button>`).join('');
   $('bc').textContent=S.bestCombo;$('tc').textContent=S.totalCorrect;
 }
@@ -337,7 +349,7 @@ function key(n){if(mode=='pic')return pkey(n);if(busy||fin||input.length>=2)retu
     say(2,()=>{idx++;if(fin)return;if(idx>=Q.length)finish();else load()});
   }else{miss++;S.mistakeProblems[k]=(S.mistakeProblems[k]||0)+1;S.practiceMastery[k]=0;combo=0;S.currentCombo=0;save();
     sNG();const e=$('eq'),g=gen;e.className='eq ng';setTimeout(()=>{e.className='eq';if(fin||g!==gen)return;clr();say(1)},450)}}
-function gain(a){S.exp+=a;while(S.exp>=need(S.level)){S.exp-=need(S.level);S.level++;lvUp=true}save()}
+function gain(a){S.exp+=a;while(S.exp>=need(S.level)){S.exp-=need(S.level);S.level++;lvUp=true}if(lvUp)autoUpgrade();save()}
 function finish(){if(fin)return;fin=true;clearInterval(tInt);if(audio)audio.pause();
   const sec=Math.round((Date.now()-t0)/1000);let rec='',title='クリア！',sub=sec+'びょう',first=false;
   if(mode=='time'){title='タイムアップ！';sub=okN+'もん せいかい';const o=S.timeAttackBest||0;if(okN>o){S.timeAttackBest=okN;rec=o?'🎉 しんきろく！':'はじめての きろく！'}else rec='さいこう '+o+'もん'}
@@ -349,7 +361,7 @@ function finish(){if(fin)return;fin=true;clearInterval(tInt);if(audio)audio.paus
   S.playCount++;S.lastAdventureAt=new Date().toISOString();save();markPerfect();qEv('clear',1);qEv('mode:'+mode,1);if(mode=='time')qEv('ta',okN,1);
   $('rtitle').textContent=title;$('rt').textContent=sub;$('rexp').textContent='+'+earned+' EXP';$('rcoin').textContent='🪙 +'+coinsGot+' コイン';$('rrec').textContent=rec+(perfNow?' ✨ ノーミス！':'');
   $('again').onclick=()=>startQuiz(mode);show('result');sWIN();burst(40,innerWidth/2,innerHeight*.3,['⭐','✨','🪙','🎉']);
-  if(lvUp)setTimeout(()=>{toast('レベルアップ！ Lv.'+S.level);sUP();burst(30)},900);
+  if(lvUp)setTimeout(()=>{toast('レベルアップ！ Lv.'+S.level+newForm());sUP();burst(30)},900);
   else if(first)setTimeout(()=>toast('⭐ '+STAGE+'のだん クリア！'),700)}
 function leave(){quit()}
 /* 毎日クエスト */
@@ -391,7 +403,7 @@ function init(m){gen++;miss=0;mode=m;stage=STAGE;idx=0;earned=0;lvUp=false;fin=f
 function showRes(title,sub){gain(5);earned+=5;S.coins+=10;coinsGot+=10;S.playCount++;S.lastAdventureAt=new Date().toISOString();save();markPerfect();qEv('clear',1);qEv('mode:'+mode,1);if(mode=='time')qEv('ta',okN,1);
   $('rtitle').textContent=title;$('rt').textContent=sub;$('rexp').textContent='+'+earned+' EXP';$('rcoin').textContent='🪙 +'+coinsGot+' コイン';$('rrec').textContent=perfNow?'✨ ノーミス！':'';
   $('again').onclick=()=>go(mode);show('result');sWIN();burst(40,innerWidth/2,innerHeight*.3,['⭐','✨','🪙','🎉']);
-  if(lvUp)setTimeout(()=>{toast('レベルアップ！ Lv.'+S.level);sUP();burst(30)},900)}
+  if(lvUp)setTimeout(()=>{toast('レベルアップ！ Lv.'+S.level+newForm());sUP();burst(30)},900)}
 const secs=()=>Math.round((Date.now()-t0)/1000)+'びょう';
 /* こたえ→しき */
 function startPF(){init('pickf');Q=shuf(all9);show('pf');pfLoad()}
@@ -451,14 +463,15 @@ const CATS=[
 ['バッジ','🏅 メダル 20,🥇 1ばん 30,🥈 2ばん 25,🥉 3ばん 20,🎖️ くんしょう 40,💯 100てん 50,🔥 がんばり 30,🚀 ロケット 60,🎯 めいちゅう 35,🧠 のうみそ 45,📚 ほんのむし 30,✍️ かきとり 25,🎓 はかせ 90,🦸 ヒーロー 80,🦄 ユニコーン 100,🐲 ドラゴン 120,🦉 ふくろう 50,🦅 わし 70,🦈 サメ 80,🐅 とら 70,🦖 きょうりゅう 100,🧙 まほうつかい 90,🥷 にんじゃ 90,🤖 ロボ 70,👾 インベーダー 60,💫 きらきら 40,✨ ピカピカ 30,🌈 にじ 50,🍀 ラッキー 35,🔔 ベル 20,🛡️ まもり 55,🏹 ゆみ 55,🪄 まほうのつえ 85,🧿 おまもり 40,♾️ むげん 150,💎 ダイヤ 200,👑 おうさま 250,🌠 ながれぼし 120,🎺 ファンファーレ 60,🏁 ゴール 45'],
 ['かたち','▭ ちょうほうけい 50,◼ せいほうけい 50,◣ ちょくかくさんかっけい 50']];
 const ITEMS=[];CATS.forEach((c,ci)=>c[1].split(',').forEach((s,i)=>{const [e,n,p]=s.split(' ');ITEMS.push({id:ci+'_'+i,e,n,p:Math.max(5,Math.round(+p*3/5)*5),c:ci,bd:c[0]=='バッジ',shape:c[0]=='かたち'?['rect','square','tri'][i]:null})}));
-const byId=id=>ITEMS.find(i=>i.id==id);
+const VIRT={hero:{id:'hero',img:1,e:'🧒'},pet:{id:'pet',img:1,e:'🐾'}};
+const byId=id=>VIRT[id]||ITEMS.find(i=>i.id==id);
 const WALLS=[['ピンク','#FFE3EC',0],['そらいろ','#DDF1FF',60],['みどり','#E2F7E6',60],['きいろ','#FFF1C9',60],['むらさき','#EBE3FF',60],['しろ','#FFFFFF',60],['オレンジ','#FFD9C2',60],['ミント','#C9F0EC',60],
 ['ストライプ ピンク','repeating-linear-gradient(90deg,#FFE3EC 0 20px,#fff 20px 40px)',150],['ストライプ あお','repeating-linear-gradient(90deg,#DDF1FF 0 20px,#fff 20px 40px)',150],['もり','repeating-linear-gradient(90deg,#CDEBC8 0 18px,#E4F5DF 18px 36px)',150],['うみ','linear-gradient(#BFE9FF,#E8F8FF)',120],['ゆうやけ','linear-gradient(#FFD0A8,#FFE6CC)',120],['みずたま','radial-gradient(#FFB3C7 20%,transparent 21%) 0 0/28px 28px,#FFF0F5',200],['チェック','conic-gradient(#FFF3C4 25%,#fff 0 50%,#FFF3C4 0 75%,#fff 0) 0 0/40px 40px',200],['ほし','radial-gradient(#FFD23F 12%,transparent 13%) 0 0/34px 34px,#FFF9E0',250],['さくら','radial-gradient(#FFC0D6 14%,transparent 15%) 0 0/30px 30px,radial-gradient(#FFC0D6 14%,transparent 15%) 15px 15px/30px 30px,#FFF4F8',350],['にじ','linear-gradient(#FFD1D1,#FFE9C9,#FFFAC9,#D4F5D4,#D0E8FF,#E3D9FF)',400]].map(a=>({n:a[0],b:a[1],p:a[2]}));
 const FLOORS=[['ウッド','#F0D2A6',0],['こげちゃ','#D8B08A',60],['みどり','#CBE5CE',60],['クリーム','#F7E8C8',60],['あお','#D5E0F0',60],['むらさき','#EAD5F0',60],['オレンジ','#E7C3A0',60],['みずいろ','#B9D9E8',60],
 ['チェック','conic-gradient(#fff 25%,#F2D7B8 0 50%,#fff 0 75%,#F2D7B8 0) 0 0/50px 50px',200],['ウッドばん','repeating-linear-gradient(90deg,#E9C48F 0 60px,#DDB27A 60px 62px)',150],['タイル','conic-gradient(#E6F0F8 25%,#fff 0 50%,#E6F0F8 0 75%,#fff 0) 0 0/50px 50px',180],['しばふ','repeating-linear-gradient(#BFE6B0 0 16px,#CDEEC0 16px 32px)',250],['ストライプ','repeating-linear-gradient(90deg,#FFD9E3 0 30px,#fff 30px 60px)',150],['にじ','linear-gradient(90deg,#FFD1D1,#FFE9C9,#FFFAC9,#D4F5D4,#D0E8FF,#E3D9FF)',400]].map(a=>({n:a[0],b:a[1],p:a[2]}));
 let shopC=0,roomC=0,sel=null,drag=null;
 const placed=id=>S.room.items.filter(o=>o.id==id).length;
-function tabs(el,cur,fn,all){$(el).innerHTML=CATS.map(c=>c[0]).concat(all?['かべがみ','ゆか']:[]).map((n,i)=>`<button class="tab ${i==cur?'on':''}" onclick="${fn}(${i})">${n}</button>`).join('')}
+function tabs(el,cur,fn,all){$(el).innerHTML=CATS.map(c=>c[0]).concat(all==1?['かべがみ','ゆか']:Array.isArray(all)?all:[]).map((n,i)=>`<button class="tab ${i==cur?'on':''}" onclick="${fn}(${i})">${n}</button>`).join('')}
 function openShop(){show('shop');drawShop()}
 function setShop(i){shopC=i;drawShop()}
 function drawShop(){tabs('stabs',shopC,'setShop',1);$('scoin').textContent=S.coins;
@@ -471,8 +484,8 @@ function openRoom(){sel=null;show('room-s');drawRoom()}
 function setRoom(i){roomC=i;drawRoom()}
 function drawRoom(){const R=S.room,rm=$('room'),w=Math.min(rm.clientWidth,rm.clientHeight*1.5)||320;
   rm.innerHTML=`<div class="wl" style="background:${(WALLS[R.wall]||WALLS[0]).b}"></div><div class="fl2" style="background:${(FLOORS[R.floor]||FLOORS[0]).b}"></div>`+R.items.map(o=>{const i=byId(o.id);return i?itemHTML(o,i,w):''}).join('');
-  $('tools').style.visibility=sel?'visible':'hidden';toolsDraw();tabs('rtabs',roomC,'setRoom');
-  $('rtray').innerHTML=ITEMS.filter(i=>i.c==roomC&&S.owned[i.id]).map(i=>{const r=S.owned[i.id]-placed(i.id);return `<button class="tr ${r>0?'':'no'}" onclick="put('${i.id}')">${ico(i)}<small>×${r}</small></button>`}).join('')||'<p class="tip">ショップで かざりを かおう！</p>';
+  $('tools').style.visibility=sel?'visible':'hidden';toolsDraw();tabs('rtabs',roomC,'setRoom',['じぶんのすがた','あいぼう']);
+  $('rtray').innerHTML=roomC>=CATS.length?(roomC==CATS.length?charTiles(AV,S.heroIcon,'hero'):charTiles(PETS,S.companionIcon,'pet')):ITEMS.filter(i=>i.c==roomC&&S.owned[i.id]).map(i=>{const r=S.owned[i.id]-placed(i.id);return `<button class="tr ${r>0?'':'no'}" onclick="put('${i.id}')">${ico(i)}<small>×${r}</small></button>`}).join('')||'<p class="tip">ショップで かざりを かおう！</p>';
   $('wl').innerHTML=WALLS.map((t,i)=>S.themes.wall.includes(i)?`<button class="sw ${i==R.wall?'on':''}" style="background:${t.b}" onclick="theme('wall',${i})"></button>`:'').join('');
   $('fl').innerHTML=FLOORS.map((t,i)=>S.themes.floor.includes(i)?`<button class="sw ${i==R.floor?'on':''}" style="background:${t.b}" onclick="theme('floor',${i})"></button>`:'').join('')}
 function theme(k,i){if(!S.themes[k].includes(i))return;S.room[k]=i;save();drawRoom()}
@@ -481,6 +494,12 @@ function themeShop(k){const L=k=='wall'?WALLS:FLOORS,own=S.themes[k];return L.ma
 function buyTheme(k,i){const t=(k=='wall'?WALLS:FLOORS)[i];if(!t||S.themes[k].includes(i))return;
   if(S.coins<t.p){sNG();toast('コインが たりないよ\nあと '+(t.p-S.coins)+' 🪙');return}
   S.coins-=t.p;S.themes[k].push(i);save();sOK();burst(14);toast('🎨 '+t.n+' ゲット！\nへやで えらぼう');drawShop()}
+function charTiles(L,cur,kind){const lv=Number(S.level)||1;return `<p class="tip" style="width:100%;margin:0 0 4px">いまの レベルは Lv.${lv}。レベルが あがると ふえるよ！</p>`+L.map(c=>{const ok=c.minLevel<=lv;
+  return `<button class="ch ${ok?'':'no'} ${c.path==cur?'on':''}" ${ok?`onclick="pickChar('${kind}','${c.path}')"`:'disabled'}><img src="${IMG}${c.path}" alt="" onerror="this.style.visibility='hidden'"><small>${c.name}</small><b>${ok?(c.path==cur?'✓ いま':'えらぶ'):'🔒 Lv.'+c.minLevel}</b></button>`}).join('')}
+function pickChar(kind,path){const lv=Number(S.level)||1,c=(kind=='hero'?AV:PETS).find(x=>x.path==path);if(!c||c.minLevel>lv){toast('Lv.'+(c?c.minLevel:'?')+' で ひらくよ');return}
+  if(kind=='hero')S.heroIcon=path;else S.companionIcon=path;const R=S.room;let o=R.items.find(x=>x.id==kind);
+  if(!o){R.n++;o={u:R.n,id:kind,x:kind=='hero'?.4:.62,y:.62,s:1,r:0};R.items.push(o)}sel=o.u;save();sOK();drawRoom()}
+const newForm=()=>{const lv=S.level,a=AV.some(c=>c.minLevel==lv),b=PETS.some(c=>c.minLevel==lv);const s=(a||b?'\n🆕 あたらしい '+(a&&b?'すがたと あいぼう':a?'すがた':'あいぼう')+'！':'')+(formUp?'\n✨ すがたが かわったよ！':'');formUp=false;return s};
 function put(id){const R=S.room;if(placed(id)>=(S.owned[id]||0)){toast('ぜんぶ おいてるよ！\nショップで かおう');return}
   if(R.items.length>=80){toast('へやが いっぱい！');return}
   R.n++;R.items.push({u:R.n,id,x:.3+Math.random()*.4,y:.45+Math.random()*.4,s:1,r:0,...(byId(id).shape?{col:4,w:byId(id).shape=='rect'?197:156,h:byId(id).shape=='rect'?123:156}:{})});sel=R.n;save();drawRoom()}
@@ -494,6 +513,7 @@ const dpx=(v,w)=>Math.max(1,v*w/1000),cl=v=>Math.min(1500,Math.max(1,Math.round(
 function shapeDef(o){if(o.w==null){const q=Math.sqrt(o.ar||1),b=156*(o.s||1);o.w=cl(b*q);o.h=cl(b/q)}}
 function itemHTML(o,i,w){const base=w*.12*(o.s||1),cls=`pi ${i.bd?'bd':''} ${o.u==sel?'sel':''}`,
   pos=`left:${o.x*100}%;top:${o.y*100}%;z-index:${S.room.items.indexOf(o)+2};transform:translate(-50%,-50%) rotate(${o.r||0}deg)`;
+  if(i.img){const path=o.id=='hero'?S.heroIcon:S.companionIcon;return `<div class="${cls}" data-u="${o.u}" style="${pos};width:${Math.round(w*.28*(o.s||1))}px"><img src="${IMG}${path}" alt="" draggable="false" style="width:100%;display:block;pointer-events:none" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;text-align:center;font-size:${Math.round(w*.2*(o.s||1))}px">${i.e}</span></div>`}
   if(i.shape){shapeDef(o);return `<div class="${cls} shp" data-u="${o.u}" style="${pos};width:${dpx(o.w,w)}px;height:${dpx(o.h,w)}px">${shSvg(i.shape,o.col)}</div>`}
   return `<div class="${cls}" data-u="${o.u}" style="${pos};font-size:${Math.round(base)}px">${i.e}</div>`}
 function toolsDraw(){const o=S.room.items.find(o=>o.u==sel),i=o&&byId(o.id),el=$('shtools');if(!i||!i.shape){el.style.display='none';return}
@@ -504,7 +524,7 @@ function setDim(k,v){const o=S.room.items.find(o=>o.u==sel);if(!o)return;o[k]=cl
   if(el)el.style[k=='w'?'width':'height']=dpx(o[k],w)+'px';const b=$('v_'+k);if(b)b.textContent=dpx(o[k],w).toFixed(1)+'px';save()}
 function tool(a,d){const R=S.room,o=R.items.find(o=>o.u==sel);if(!o)return;const i=byId(o.id),sh=i&&i.shape;if(sh)shapeDef(o);
   if(a=='del'){R.items=R.items.filter(x=>x!=o);sel=null}
-  else if(a=='s'){if(sh){const f=d>0?1.2:1/1.2;o.w=cl(o.w*f);o.h=cl(o.h*f)}else o.s=Math.min(2.4,Math.max(.6,Math.round(((o.s||1)+d)*10)/10))}
+  else if(a=='s'){if(sh){const f=d>0?1.2:1/1.2;o.w=cl(o.w*f);o.h=cl(o.h*f)}else if(i&&i.img)o.s=Math.min(6,Math.max(.15,Math.round((o.s||1)*(d>0?1.2:1/1.2)*100)/100));else o.s=Math.min(2.4,Math.max(.6,Math.round(((o.s||1)+d)*10)/10))}
   else if(a=='r')o.r=((o.r||0)+d+360)%360;
   else if(a=='w'||a=='h')o[a]=cl(o[a]+d);
   else if(a=='col')o.col=d;
@@ -517,5 +537,7 @@ function tool(a,d){const R=S.room,o=R.items.find(o=>o.u==sel);if(!o)return;const
     const el=rm.querySelector(`[data-u="${drag.u}"]`);if(el){el.style.left=drag.x*100+'%';el.style.top=drag.y*100+'%'}});
   const up=()=>{if(drag){drag=null;save()}};rm.addEventListener('pointerup',up);rm.addEventListener('pointercancel',up);
   addEventListener('resize',()=>{if($('room-s').classList.contains('on'))drawRoom()})})();
+document.addEventListener('visibilitychange',()=>{if(document.hidden)return;
+  try{const t=JSON.parse(localStorage.getItem(KEY));if(t&&typeof t==='object'){Object.assign(S,t);validateForms();autoUpgrade();render();if($('room-s').classList.contains('on'))drawRoom()}}catch(e){}});
 render();
 </script></body></html>
