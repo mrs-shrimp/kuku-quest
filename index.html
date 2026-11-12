@@ -914,6 +914,109 @@
         .sennin-input-wrong {
             color: var(--danger-color) !important;
         }
+
+        /* ===== 仙人の しゅぎょう (九九のかみさま ランダムーン) ===== */
+        .ranmoon-moon-big { font-size: 4.5rem; }
+        .ranmoon-combo {
+            position: absolute; left: 8px; bottom: 4px;
+            font-size: 0.9rem; color: #ffe066; font-weight: bold;
+            text-shadow: 0 0 6px #ff9900; min-height: 1.5em; text-align: left;
+        }
+        .ranmoon-combo-num { font-size: 1.7rem; display: inline-block; }
+        .ranmoon-combo.pop .ranmoon-combo-num { animation: ranmoon-pop 0.35s ease-out; }
+        @keyframes ranmoon-pop {
+            0% { transform: scale(2.3); }
+            60% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        .ranmoon-stats { position: absolute; right: 8px; bottom: 4px; font-size: 0.7rem; color: #aaa; text-align: right; }
+        .ranmoon-banner {
+            position: absolute; top: 30px; left: 0; right: 0; text-align: center;
+            font-size: 1.4rem; font-weight: bold; color: #fff;
+            text-shadow: 0 0 8px #ff66cc, 0 0 14px #ffcc00;
+            opacity: 0; pointer-events: none; z-index: 3;
+        }
+        .ranmoon-banner.show { animation: ranmoon-banner 1.1s ease-out; }
+        @keyframes ranmoon-banner {
+            0% { opacity: 0; transform: scale(0.5); }
+            15% { opacity: 1; transform: scale(1.3); }
+            30% { transform: scale(1); }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+        .ranmoon-fx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
+        .ranmoon-fx-fixed { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 1003; }
+        .ranmoon-particle {
+            position: absolute; transform: translate(-50%, -50%);
+            animation: ranmoon-burst 0.85s ease-out forwards; pointer-events: none;
+        }
+        @keyframes ranmoon-burst {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.4); }
+            100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.2); }
+        }
+        #ranmoon-monster { font-size: 3.4rem; }
+        #ranmoon-monster.ranmoon-hit { animation: ranmoon-hit 0.25s ease-out; }
+        @keyframes ranmoon-hit {
+            0% { transform: scale(1.5) rotate(-12deg); filter: brightness(2.5); }
+            100% { transform: scale(1) rotate(0); filter: none; }
+        }
+        #ranmoon-monster.defeated { animation: ranmoon-defeat 1s ease-in forwards; }
+        @keyframes ranmoon-defeat {
+            0% { transform: scale(1) rotate(0); opacity: 1; }
+            30% { transform: scale(1.6) rotate(-15deg); filter: brightness(3); opacity: 1; }
+            100% { transform: scale(0) rotate(540deg); opacity: 0; }
+        }
+        #ranmoon-screen[data-tier="1"] #ranmoon-field { box-shadow: inset 0 0 14px #ffe066; }
+        #ranmoon-screen[data-tier="2"] #ranmoon-field { box-shadow: inset 0 0 20px #ff9933; animation: ranmoon-glow 0.8s ease-in-out infinite alternate; }
+        #ranmoon-screen[data-tier="3"] #ranmoon-field { animation: ranmoon-rainbow 1.6s linear infinite; }
+        @keyframes ranmoon-glow {
+            from { box-shadow: inset 0 0 12px #ff9933; }
+            to { box-shadow: inset 0 0 28px #ff5533; }
+        }
+        @keyframes ranmoon-rainbow {
+            0% { box-shadow: inset 0 0 26px #ff4466; }
+            25% { box-shadow: inset 0 0 26px #ffdd33; }
+            50% { box-shadow: inset 0 0 26px #44ff88; }
+            75% { box-shadow: inset 0 0 26px #44bbff; }
+            100% { box-shadow: inset 0 0 26px #ff4466; }
+        }
+        .ranmoon-shake { animation: ranmoon-shake 0.3s; }
+        @keyframes ranmoon-shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+        #ranmoon-flash { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 1000; background: #fff; }
+        #ranmoon-flash.show { animation: ranmoon-flash 0.45s ease-out; }
+        @keyframes ranmoon-flash {
+            0% { opacity: 0.55; }
+            100% { opacity: 0; }
+        }
+        #ranmoon-countdown {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); z-index: 1002;
+            display: none; align-items: center; justify-content: center;
+        }
+        #ranmoon-countdown.show { display: flex; }
+        .ranmoon-count-num {
+            font-size: 6.5rem; color: #ffe066; font-weight: bold;
+            text-shadow: 0 0 18px #ff66cc; animation: ranmoon-countpop 0.8s ease-out;
+        }
+        .ranmoon-count-num.go { font-size: 2.8rem; color: #7dff9b; }
+        @keyframes ranmoon-countpop {
+            0% { transform: scale(2.4); opacity: 0; }
+            35% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 1; }
+        }
+        .ranmoon-rank-badge { font-size: 1.5rem; font-weight: bold; color: #ffe066; margin-top: 4px; }
+        @media (prefers-reduced-motion: reduce) {
+            .ranmoon-particle { display: none; }
+            #ranmoon-flash.show { animation: none; }
+            .ranmoon-count-num { animation: none; }
+            #ranmoon-screen[data-tier="2"] #ranmoon-field,
+            #ranmoon-screen[data-tier="3"] #ranmoon-field { animation: none; box-shadow: inset 0 0 20px #ffcc33; }
+        }
     </style>
 </head>
 <body id="body-root">
@@ -1244,6 +1347,77 @@
             <button class="retro-btn primary" id="sennin-result-action" onclick="senninResultAction()">つぎへ</button>
             <button class="retro-btn" onclick="showSenninSelect()" style="margin-top: 6px;">もどる</button>
         </div>
+
+        <!-- 仙人の しゅぎょう (ランダムーン) 説明画面 -->
+        <div id="ranmoon-intro-screen" class="screen" style="justify-content: center;">
+            <div class="battle-header" style="width: 100%;">
+                <button class="back-home-btn" onclick="showSenninSelect()">◀ もどる</button>
+                <span>🌙 仙人の しゅぎょう</span>
+                <span></span>
+            </div>
+            <div class="dot-graphic ranmoon-moon-big">🌙</div>
+            <div style="color: var(--accent-color); font-size: 1.15rem; font-weight: bold;">九九のかみさま ランダムーン</div>
+            <div class="rpg-window" style="margin: 6px 0;">
+                <p style="line-height: 1.6; font-size: 0.95rem;">九九すべての問題がランダムで出るよ！<br>何分で、何もん正かいできるかな？<br>さらなる高みを目ざそう！</p>
+            </div>
+            <div class="rpg-window" style="margin: 0 0 6px;" id="ranmoon-record-box"></div>
+            <button class="retro-btn primary" onclick="startRanmoon()">はじめる！</button>
+            <button class="retro-btn" onclick="showSenninSelect()" style="margin-top: 6px;">もどる</button>
+        </div>
+
+        <!-- 仙人の しゅぎょう (ランダムーン) バトル画面 -->
+        <div id="ranmoon-screen" class="screen" data-tier="0">
+            <div class="battle-header">
+                <button class="back-home-btn" onclick="ranmoonQuit()">◀ やめる</button>
+                <span style="font-size: 0.85rem; white-space: nowrap;">🌙 仙人の しゅぎょう</span>
+                <span id="ranmoon-timer" style="font-weight: bold; white-space: nowrap;">⏱️ 0:00.0</span>
+            </div>
+            <div class="field-box" id="ranmoon-field">
+                <div class="enemy-info">
+                    <span style="white-space: nowrap; font-size: 0.68rem;">九九のかみさま ランダムーン</span>
+                    <span id="ranmoon-hp-text" style="white-space: nowrap;">81 / 81</span>
+                </div>
+                <div class="pixel-gauge-bg">
+                    <div class="pixel-gauge-fill" id="ranmoon-gauge"></div>
+                </div>
+                <div class="dot-graphic" id="ranmoon-monster" style="margin-top: 4px;">🌙</div>
+                <div class="ranmoon-combo" id="ranmoon-combo"></div>
+                <div class="ranmoon-stats" id="ranmoon-stats">せいかい 0もん / ミス 0</div>
+                <div class="ranmoon-banner" id="ranmoon-banner"></div>
+                <div class="ranmoon-fx" id="ranmoon-fx"></div>
+            </div>
+            <div class="rpg-window">
+                <div class="rpg-kana" id="ranmoon-kana">&nbsp;</div>
+                <div class="rpg-problem" id="ranmoon-problem">1 × 1</div>
+            </div>
+            <div class="input-screen-box" id="ranmoon-input">-</div>
+            <div class="pixel-keypad">
+                <button class="pixel-key" onclick="ranmoonDigit(1)">1</button><button class="pixel-key" onclick="ranmoonDigit(2)">2</button><button class="pixel-key" onclick="ranmoonDigit(3)">3</button><button class="pixel-key" onclick="ranmoonDigit(4)">4</button><button class="pixel-key" onclick="ranmoonDigit(5)">5</button><button class="pixel-key" onclick="ranmoonDigit(6)">6</button><button class="pixel-key" onclick="ranmoonDigit(7)">7</button><button class="pixel-key" onclick="ranmoonDigit(8)">8</button><button class="pixel-key" onclick="ranmoonDigit(9)">9</button>
+                <button class="pixel-key clear-key" onclick="ranmoonClear()">けす</button>
+                <button class="pixel-key" onclick="ranmoonDigit(0)">0</button>
+            </div>
+        </div>
+
+        <!-- 仙人の しゅぎょう (ランダムーン) けっか画面 -->
+        <div id="ranmoon-result-screen" class="screen" style="justify-content: center;">
+            <h1 id="ranmoon-result-title" style="color: #ffcc00;">ランダムーンを やっつけた！</h1>
+            <div class="dot-graphic" id="ranmoon-result-icon" style="margin: 6px 0;">🌙💥</div>
+            <div class="rpg-window" style="margin: 4px 0;">
+                <p style="font-size: 0.85rem; color: #aaa;">クリアタイム</p>
+                <p class="rpg-problem" id="ranmoon-result-time" style="color: #55ff55; margin-top: 2px;">0びょう</p>
+                <p class="ranmoon-rank-badge" id="ranmoon-result-rank"></p>
+                <p id="ranmoon-result-record" style="font-size: 0.95rem; color: #ffcc00; margin-top: 6px; font-weight: bold; min-height: 1.3em;"></p>
+                <p id="ranmoon-result-detail" style="font-size: 0.9rem; color: #8ef; margin-top: 4px; line-height: 1.5;"></p>
+                <p id="ranmoon-result-next" style="font-size: 0.9rem; color: #ffb366; margin-top: 4px; line-height: 1.5;"></p>
+                <p id="ranmoon-result-recent" style="font-size: 0.75rem; color: #aaa; margin-top: 6px; line-height: 1.5;"></p>
+            </div>
+            <button class="retro-btn primary" onclick="startRanmoon()">もういちど ちょうせん</button>
+            <button class="retro-btn" onclick="showSenninSelect()" style="margin-top: 6px;">もどる</button>
+        </div>
+
+        <div id="ranmoon-countdown"></div>
+        <div id="ranmoon-flash"></div>
+        <div class="ranmoon-fx-fixed" id="ranmoon-result-fx"></div>
 
         <!-- 全クリア画面 -->
         <div id="all-clear-screen" class="screen" style="justify-content:center; overflow-y:auto;">
@@ -1670,6 +1844,8 @@
         if (!Array.isArray(saveData.senninClearedLevels)) saveData.senninClearedLevels = [];
         if (!saveData.senninClearCounts || typeof saveData.senninClearCounts !== 'object') saveData.senninClearCounts = {};
         if (!saveData.senninBestTimes || typeof saveData.senninBestTimes !== 'object') saveData.senninBestTimes = {};
+        if (!saveData.ranmoonRecord || typeof saveData.ranmoonRecord !== 'object') saveData.ranmoonRecord = {};
+        if (!Array.isArray(saveData.ranmoonRecord.recentTimes)) saveData.ranmoonRecord.recentTimes = [];
 
         let currentStage = 1;
         let isReverseMode = false;
@@ -3356,7 +3532,24 @@
                 }
                 container.appendChild(btn);
             }
+
+            // 九九仙人 Lv.10 をクリアしたら「仙人の しゅぎょう」(ランダムーン) が登場
+            let ranmoonEntry = null;
+            if (saveData.senninClearedLevels.includes(10)) {
+                ranmoonEntry = document.createElement('div');
+                ranmoonEntry.className = 'stage-item next-world';
+                const bestSec = Number(saveData.ranmoonRecord.bestTime);
+                ranmoonEntry.textContent = bestSec > 0
+                    ? `🌙 仙人の しゅぎょう (ベスト ${ranmoonFormatSec(bestSec)})`
+                    : "🌙 仙人の しゅぎょう (ランダムーン) NEW!";
+                ranmoonEntry.onclick = () => showRanmoonIntro();
+                container.appendChild(ranmoonEntry);
+            }
             switchScreen('sennin-select-screen');
+            // はじめて解禁されたときは、ボタンが見える位置までスクロールする
+            if (ranmoonEntry && !(Number(saveData.ranmoonRecord.clearCount) > 0)) {
+                container.scrollTop = container.scrollHeight;
+            }
         }
 
         function startSennin(lvl) {
@@ -3595,7 +3788,7 @@
                     actionBtn.textContent = `Lv.${senninLevel + 1} に すすむ`;
                     actionBtn.dataset.action = 'next';
                 } else {
-                    detailEl.innerHTML += '<br>🎉 九九だいせんにんに なったのじゃ！';
+                    detailEl.innerHTML += '<br>🎉 九九だいせんにんに なったのじゃ！<br>🌙 「仙人の しゅぎょう」が かいほうされたよ！';
                     actionBtn.textContent = 'もういちど しゅぎょう';
                     actionBtn.dataset.action = 'retry';
                 }
@@ -3615,6 +3808,434 @@
             const action = document.getElementById('sennin-result-action').dataset.action;
             if (action === 'next' && senninLevel < 10) startSennin(senninLevel + 1);
             else startSennin(senninLevel);
+        }
+
+
+        // =====================================================
+        // 仙人の しゅぎょう (九九のかみさま ランダムーン)
+        // 九九81問がランダムで出る。ぜんぶ正かいするとやっつけられる。タイムを記録。
+        // =====================================================
+        const RANMOON_TOTAL = 81;
+        const RANMOON_RANKS = [
+            { name: 'みならい', icon: '🌱', limit: Infinity },
+            { name: 'ブロンズ', icon: '🥉', limit: 600 },
+            { name: 'シルバー', icon: '🥈', limit: 420 },
+            { name: 'ゴールド', icon: '🥇', limit: 300 },
+            { name: 'プラチナ', icon: '💎', limit: 240 },
+            { name: 'でんせつ', icon: '👑', limit: 180 }
+        ];
+        const RANMOON_COMBO_WORDS = { 3: 'いいね！', 5: 'すごい！', 10: 'てんさい！', 15: 'ぐんぐん！', 20: 'かみわざ！', 30: 'でんせつ！', 40: 'むてき！', 50: 'ぎんがてき！' };
+        const RANMOON_COMBO_EXTRA = ['すごい！', 'いいぞ！', 'かんぺき！', 'さいこう！'];
+
+        let ranmoonQueue = [];
+        let ranmoonIndex = 0;
+        let ranmoonSolved = 0;
+        let ranmoonMistakes = 0;
+        let ranmoonCombo = 0;
+        let ranmoonMaxCombo = 0;
+        let ranmoonInput = '';
+        let ranmoonLocked = true;
+        let ranmoonRunning = false;
+        let ranmoonStartMs = 0;
+        let ranmoonTimerId = null;
+        let ranmoonTimeouts = [];
+        let ranmoonWrongOnCurrent = 0;
+        let ranmoonLastResult = null;
+
+        function ranmoonSetTimeout(fn, ms) {
+            const id = setTimeout(() => {
+                ranmoonTimeouts = ranmoonTimeouts.filter(t => t !== id);
+                fn();
+            }, ms);
+            ranmoonTimeouts.push(id);
+            return id;
+        }
+
+        function ranmoonClearTimers() {
+            if (ranmoonTimerId) {
+                clearInterval(ranmoonTimerId);
+                ranmoonTimerId = null;
+            }
+            ranmoonTimeouts.forEach(t => clearTimeout(t));
+            ranmoonTimeouts = [];
+        }
+
+        function ranmoonFormatSec(sec) {
+            const tenths = Math.round(Number(sec) * 10);
+            const m = Math.floor(tenths / 600);
+            const s = (tenths - m * 600) / 10;
+            return m > 0 ? `${m}ふん${s.toFixed(1)}びょう` : `${s.toFixed(1)}びょう`;
+        }
+
+        function ranmoonFormatClock(ms) {
+            const tenths = Math.floor(Math.max(0, ms) / 100);
+            const m = Math.floor(tenths / 600);
+            const s = (tenths - m * 600) / 10;
+            return `${m}:${s.toFixed(1).padStart(4, '0')}`;
+        }
+
+        function ranmoonRankIndex(sec) {
+            let idx = 0;
+            for (let i = 1; i < RANMOON_RANKS.length; i++) {
+                if (sec <= RANMOON_RANKS[i].limit) idx = i;
+            }
+            return idx;
+        }
+
+        function ranmoonTier(combo) {
+            if (combo >= 20) return 3;
+            if (combo >= 10) return 2;
+            if (combo >= 5) return 1;
+            return 0;
+        }
+
+        function showRanmoonIntro() {
+            ranmoonClearTimers();
+            ranmoonRunning = false;
+            setWorldTheme(true);
+            playBGM('nextworld');
+            const rec = saveData.ranmoonRecord;
+            const box = document.getElementById('ranmoon-record-box');
+            const bestSec = Number(rec.bestTime);
+            if (!(bestSec > 0)) {
+                box.innerHTML = '<p style="font-size:0.9rem;color:#8ef;line-height:1.5;">まだ きろくが ないよ。<br>さいしょの きろくを つくろう！</p>';
+            } else {
+                const rank = RANMOON_RANKS[Math.min(RANMOON_RANKS.length - 1, Math.max(0, Number(rec.bestRank) || 0))];
+                box.innerHTML = `<p style="font-size:0.8rem;color:#aaa;">じぶんの ベストきろく</p>`
+                    + `<p style="font-size:1.3rem;color:#55ff55;margin:2px 0;">${ranmoonFormatSec(bestSec)}</p>`
+                    + `<p style="font-size:0.9rem;color:#ffe066;">${rank.icon} ${rank.name}</p>`
+                    + `<p style="font-size:0.8rem;color:#8ef;margin-top:2px;">さいこうれんぞく ${Number(rec.bestCombo) || 0} / クリア ${Number(rec.clearCount) || 0}かい</p>`;
+            }
+            switchScreen('ranmoon-intro-screen');
+        }
+
+        function startRanmoon() {
+            initAudioContext();
+            ranmoonClearTimers();
+            setWorldTheme(true);
+            playBGM('nextworld');
+            ranmoonQueue = [];
+            for (let a = 1; a <= 9; a++) {
+                for (let b = 1; b <= 9; b++) ranmoonQueue.push({ a, b });
+            }
+            for (let i = ranmoonQueue.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [ranmoonQueue[i], ranmoonQueue[j]] = [ranmoonQueue[j], ranmoonQueue[i]];
+            }
+            ranmoonIndex = 0;
+            ranmoonSolved = 0;
+            ranmoonMistakes = 0;
+            ranmoonCombo = 0;
+            ranmoonMaxCombo = 0;
+            ranmoonInput = '';
+            ranmoonLocked = true;
+            ranmoonRunning = false;
+            ranmoonWrongOnCurrent = 0;
+            ranmoonLastResult = null;
+
+            document.getElementById('ranmoon-screen').dataset.tier = '0';
+            document.getElementById('ranmoon-monster').classList.remove('defeated', 'ranmoon-hit');
+            document.getElementById('ranmoon-fx').innerHTML = '';
+            document.getElementById('ranmoon-result-fx').innerHTML = '';
+            document.getElementById('ranmoon-combo').textContent = '';
+            document.getElementById('ranmoon-banner').classList.remove('show');
+            document.getElementById('ranmoon-timer').textContent = '⏱️ 0:00.0';
+            document.getElementById('ranmoon-input').textContent = '-';
+            document.getElementById('ranmoon-input').classList.remove('sennin-input-wrong');
+            document.getElementById('ranmoon-problem').textContent = '？ × ？';
+            document.getElementById('ranmoon-kana').innerHTML = '&nbsp;';
+            ranmoonRenderStatus();
+            switchScreen('ranmoon-screen');
+            ranmoonCountdown();
+        }
+
+        function ranmoonCountdown() {
+            const ov = document.getElementById('ranmoon-countdown');
+            ov.classList.add('show');
+            const steps = ['3', '2', '1', 'スタート！'];
+            steps.forEach((t, i) => {
+                ranmoonSetTimeout(() => {
+                    ov.innerHTML = `<div class="ranmoon-count-num ${i === 3 ? 'go' : ''}">${t}</div>`;
+                    if (i < 3) playTone(660, 0.12, 'square', 0.08, 0);
+                    else { playTone(988, 0.1, 'square', 0.08, 0); playTone(1319, 0.2, 'square', 0.08, 0.1); }
+                }, i * 800);
+            });
+            ranmoonSetTimeout(() => {
+                ov.classList.remove('show');
+                ov.innerHTML = '';
+                ranmoonBegin();
+            }, 3 * 800 + 700);
+        }
+
+        function ranmoonBegin() {
+            ranmoonRunning = true;
+            ranmoonLocked = false;
+            ranmoonStartMs = Date.now();
+            ranmoonTimerId = setInterval(() => {
+                document.getElementById('ranmoon-timer').textContent = `⏱️ ${ranmoonFormatClock(Date.now() - ranmoonStartMs)}`;
+            }, 100);
+            ranmoonLoadProblem();
+        }
+
+        function ranmoonLoadProblem() {
+            const p = ranmoonQueue[ranmoonIndex];
+            ranmoonInput = '';
+            ranmoonWrongOnCurrent = 0;
+            document.getElementById('ranmoon-problem').textContent = `${p.a} × ${p.b}`;
+            document.getElementById('ranmoon-kana').innerHTML = '&nbsp;';
+            const box = document.getElementById('ranmoon-input');
+            box.textContent = '-';
+            box.classList.remove('sennin-input-wrong');
+        }
+
+        function ranmoonRenderStatus() {
+            const left = RANMOON_TOTAL - ranmoonSolved;
+            document.getElementById('ranmoon-hp-text').textContent = `${left} / ${RANMOON_TOTAL}`;
+            document.getElementById('ranmoon-gauge').style.width = `${(left / RANMOON_TOTAL) * 100}%`;
+            document.getElementById('ranmoon-stats').textContent = `せいかい ${ranmoonSolved}もん / ミス ${ranmoonMistakes}`;
+        }
+
+        function ranmoonDigit(d) {
+            if (!ranmoonRunning || ranmoonLocked) return;
+            if (ranmoonInput.length >= 2) return;
+            ranmoonInput += String(d);
+            document.getElementById('ranmoon-input').textContent = ranmoonInput;
+            const p = ranmoonQueue[ranmoonIndex];
+            const ans = p.a * p.b;
+            const targetLen = ans >= 10 ? 2 : 1;
+            if (ranmoonInput.length === targetLen) {
+                if (parseInt(ranmoonInput, 10) === ans) ranmoonCorrect(p, ans);
+                else ranmoonWrong(p);
+            }
+        }
+
+        function ranmoonClear() {
+            if (!ranmoonRunning || ranmoonLocked) return;
+            ranmoonInput = '';
+            document.getElementById('ranmoon-input').textContent = '-';
+        }
+
+        function ranmoonCorrect(p, ans) {
+            ranmoonLocked = true;
+            ranmoonSolved++;
+            ranmoonCombo++;
+            if (ranmoonCombo > ranmoonMaxCombo) ranmoonMaxCombo = ranmoonCombo;
+            document.getElementById('ranmoon-problem').textContent = `${p.a} × ${p.b} ＝ ${ans}`;
+            document.getElementById('ranmoon-kana').textContent = kukuData[p.a][p.b].first + kukuData[p.a][p.b].second;
+            const monster = document.getElementById('ranmoon-monster');
+            monster.classList.remove('ranmoon-hit');
+            void monster.offsetWidth;
+            monster.classList.add('ranmoon-hit');
+            ranmoonRenderStatus();
+            playHitSound();
+            ranmoonComboEffect(ranmoonCombo);
+
+            if (ranmoonSolved >= RANMOON_TOTAL) {
+                ranmoonFinish();
+                return;
+            }
+            if (ranmoonSolved === 41 && !(ranmoonCombo % 5 === 0 || ranmoonCombo === 3)) ranmoonBanner('はんぶん こえた！');
+            if (ranmoonSolved === 71 && !(ranmoonCombo % 5 === 0 || ranmoonCombo === 3)) ranmoonBanner('あと すこし！');
+            ranmoonSetTimeout(() => {
+                ranmoonIndex++;
+                ranmoonLocked = false;
+                ranmoonLoadProblem();
+            }, 260);
+        }
+
+        function ranmoonWrong(p) {
+            ranmoonLocked = true;
+            ranmoonMistakes++;
+            ranmoonWrongOnCurrent++;
+            const hadCombo = ranmoonCombo;
+            ranmoonCombo = 0;
+            ranmoonRenderStatus();
+            document.getElementById('ranmoon-screen').dataset.tier = '0';
+            const comboEl = document.getElementById('ranmoon-combo');
+            comboEl.textContent = hadCombo >= 5 ? 'コンボが きれた…' : '';
+            playDamageSound();
+            const box = document.getElementById('ranmoon-input');
+            box.classList.add('sennin-input-wrong');
+            box.classList.remove('ranmoon-shake');
+            void box.offsetWidth;
+            box.classList.add('ranmoon-shake');
+            if (ranmoonWrongOnCurrent >= 2) {
+                // 2回まちがえたら、九九のよみ(式の部分)をヒントに出す
+                document.getElementById('ranmoon-kana').textContent = kukuData[p.a][p.b].first;
+            }
+            ranmoonSetTimeout(() => {
+                ranmoonInput = '';
+                box.textContent = '-';
+                box.classList.remove('sennin-input-wrong', 'ranmoon-shake');
+                ranmoonLocked = false;
+            }, 380);
+        }
+
+        function ranmoonBanner(text) {
+            const el = document.getElementById('ranmoon-banner');
+            el.textContent = text;
+            el.classList.remove('show');
+            void el.offsetWidth;
+            el.classList.add('show');
+        }
+
+        function ranmoonFlash(color) {
+            const el = document.getElementById('ranmoon-flash');
+            el.style.background = color;
+            el.classList.remove('show');
+            void el.offsetWidth;
+            el.classList.add('show');
+        }
+
+        function ranmoonBurst(containerId, count, cx, cy) {
+            const box = document.getElementById(containerId);
+            if (!box) return;
+            const emojis = ['✨', '⭐', '🌟', '💫', '🎉', '🌙'];
+            const room = Math.max(0, 80 - box.childElementCount);
+            const n = Math.min(count, room);
+            for (let i = 0; i < n; i++) {
+                const s = document.createElement('span');
+                s.className = 'ranmoon-particle';
+                s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                const ang = Math.random() * Math.PI * 2;
+                const dist = 40 + Math.random() * 100;
+                s.style.left = `${cx}%`;
+                s.style.top = `${cy}%`;
+                s.style.setProperty('--dx', `${Math.cos(ang) * dist}px`);
+                s.style.setProperty('--dy', `${Math.sin(ang) * dist}px`);
+                s.style.fontSize = `${0.9 + Math.random() * 1.0}rem`;
+                box.appendChild(s);
+                setTimeout(() => s.remove(), 900);
+            }
+        }
+
+        function ranmoonComboEffect(combo) {
+            const comboEl = document.getElementById('ranmoon-combo');
+            if (combo >= 2) {
+                comboEl.innerHTML = `<span class="ranmoon-combo-num">${combo}</span> れんぞく！`;
+                comboEl.classList.remove('pop');
+                void comboEl.offsetWidth;
+                comboEl.classList.add('pop');
+            } else {
+                comboEl.textContent = '';
+            }
+            document.getElementById('ranmoon-screen').dataset.tier = String(ranmoonTier(combo));
+
+            // れんぞくするほど音がのぼっていく
+            const scale = [523.25, 587.33, 659.25, 783.99, 880.00];
+            const freq = scale[(combo - 1) % 5] * (combo > 10 ? 2 : 1);
+            playTone(freq, 0.09, 'square', 0.06, 0.07);
+
+            const isMilestone = (combo === 3) || (combo >= 5 && combo % 5 === 0);
+            if (isMilestone) {
+                const word = RANMOON_COMBO_WORDS[combo] || RANMOON_COMBO_EXTRA[Math.floor(combo / 5) % RANMOON_COMBO_EXTRA.length];
+                ranmoonBanner(word);
+                ranmoonBurst('ranmoon-fx', combo >= 10 ? 34 : 24, 50, 58);
+                ranmoonFlash(combo >= 20 ? '#ffe066' : (combo >= 10 ? '#ff9966' : '#ffffff'));
+                playLevelUpSound();
+            } else {
+                ranmoonBurst('ranmoon-fx', combo >= 2 ? 6 : 3, 50, 58);
+            }
+        }
+
+        function ranmoonFinish() {
+            ranmoonRunning = false;
+            ranmoonLocked = true;
+            if (ranmoonTimerId) { clearInterval(ranmoonTimerId); ranmoonTimerId = null; }
+            const elapsedMs = Date.now() - ranmoonStartMs;
+            document.getElementById('ranmoon-timer').textContent = `⏱️ ${ranmoonFormatClock(elapsedMs)}`;
+            document.getElementById('ranmoon-monster').classList.add('defeated');
+            ranmoonBanner('やっつけた！');
+            ranmoonBurst('ranmoon-fx', 40, 50, 55);
+            ranmoonFlash('#ffe066');
+            playVictoryFanfare();
+
+            // きろくの計算と保存
+            const sec = Math.max(0.1, Math.round(elapsedMs / 100) / 10);
+            const rec = saveData.ranmoonRecord;
+            const prevBest = Number(rec.bestTime) > 0 ? Number(rec.bestTime) : null;
+            const prevBestCombo = Number(rec.bestCombo) || 0;
+            const prevBestRank = Math.max(0, Number(rec.bestRank) || 0);
+            const prevBestMistakes = Number.isFinite(Number(rec.bestMistakes)) && rec.bestMistakes !== undefined && rec.bestMistakes !== null ? Number(rec.bestMistakes) : null;
+            const rankIdx = ranmoonRankIndex(sec);
+
+            const result = {
+                sec, rankIdx,
+                mistakes: ranmoonMistakes,
+                maxCombo: ranmoonMaxCombo,
+                prevBest,
+                isFirst: prevBest === null,
+                isNewBest: prevBest === null || sec < prevBest,
+                isNewCombo: ranmoonMaxCombo > prevBestCombo && prevBestCombo > 0,
+                isNewRank: rankIdx > prevBestRank,
+                isNoMiss: ranmoonMistakes === 0,
+                prevRecent: Array.isArray(rec.recentTimes) ? rec.recentTimes.slice() : []
+            };
+
+            if (result.isNewBest) rec.bestTime = sec;
+            if (ranmoonMaxCombo > prevBestCombo) rec.bestCombo = ranmoonMaxCombo;
+            if (rankIdx > prevBestRank || rec.bestRank === undefined) rec.bestRank = Math.max(rankIdx, prevBestRank);
+            if (prevBestMistakes === null || ranmoonMistakes < prevBestMistakes) rec.bestMistakes = ranmoonMistakes;
+            rec.lastTime = sec;
+            rec.clearCount = (Number(rec.clearCount) || 0) + 1;
+            rec.recentTimes = result.prevRecent.concat([sec]).slice(-5);
+            localStorage.setItem('kuku_save_data', JSON.stringify(saveData));
+            ranmoonLastResult = result;
+
+            ranmoonSetTimeout(() => showRanmoonResult(), 1500);
+        }
+
+        function showRanmoonResult() {
+            const r = ranmoonLastResult;
+            if (!r) return;
+            const rank = RANMOON_RANKS[r.rankIdx];
+            document.getElementById('ranmoon-result-time').textContent = ranmoonFormatSec(r.sec);
+            document.getElementById('ranmoon-result-rank').textContent = `${rank.icon} ランク：${rank.name}`;
+            document.getElementById('ranmoon-result-icon').textContent = `${rank.icon}🌙💥`;
+
+            let recordText = '';
+            if (r.isFirst) recordText = 'さいしょの きろく！ つぎは もっと はやく なれるかな？';
+            else if (r.isNewBest) recordText = `ベストタイム こうしん！ ${ranmoonFormatSec(Math.round((r.prevBest - r.sec) * 10) / 10)} はやくなったよ！`;
+            else recordText = `ベストまで あと ${ranmoonFormatSec(Math.round((r.sec - r.prevBest) * 10) / 10)}！ もういっかい！`;
+            document.getElementById('ranmoon-result-record').textContent = recordText;
+
+            const lines = [];
+            lines.push(`81もん せいかい / ミス ${r.mistakes}かい`);
+            lines.push(`さいこうれんぞく ${r.maxCombo}${r.isNewCombo ? ' (きろく こうしん！)' : ''}`);
+            if (r.isNoMiss) lines.push('🎉 ノーミス！ かんぺき！');
+            if (r.isNewRank) lines.push(`⭐ あたらしい ランク「${rank.name}」に とうたつ！`);
+            document.getElementById('ranmoon-result-detail').innerHTML = lines.join('<br>');
+
+            let nextText = '';
+            if (r.rankIdx < RANMOON_RANKS.length - 1) {
+                const nextRank = RANMOON_RANKS[r.rankIdx + 1];
+                const gap = Math.ceil(r.sec - nextRank.limit);
+                nextText = `つぎの ランク「${nextRank.icon}${nextRank.name}」まで あと ${gap}びょう！`;
+            } else {
+                nextText = '👑 いちばん うえの ランク！ さらなる たかみへ！';
+            }
+            document.getElementById('ranmoon-result-next').textContent = nextText;
+
+            const recent = (saveData.ranmoonRecord.recentTimes || []).map(t => ranmoonFormatClock(t * 1000));
+            document.getElementById('ranmoon-result-recent').textContent = recent.length >= 2
+                ? `さいきんの きろく： ${recent.join(' → ')}`
+                : '';
+
+            switchScreen('ranmoon-result-screen');
+            ranmoonBurst('ranmoon-result-fx', r.isNewBest ? 50 : 24, 50, 30);
+        }
+
+        function ranmoonQuit() {
+            if (ranmoonRunning && ranmoonSolved > 0) {
+                if (!confirm('やめると きろくは のこらないよ。やめる？')) return;
+            }
+            ranmoonClearTimers();
+            ranmoonRunning = false;
+            ranmoonLocked = true;
+            const ov = document.getElementById('ranmoon-countdown');
+            ov.classList.remove('show');
+            ov.innerHTML = '';
+            showRanmoonIntro();
         }
 
         window.addEventListener('DOMContentLoaded', () => {
