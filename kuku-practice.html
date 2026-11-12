@@ -122,6 +122,10 @@ h1{margin:0;font-size:1.5rem;letter-spacing:.04em}.sub{margin:2px 0 0;font-size:
 .ch{width:122px;padding:8px 4px;border-radius:18px;background:#fff;box-shadow:var(--sh);font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px}
 .ch img{width:84px;height:84px;object-fit:contain}.ch small{font-size:.68rem;line-height:1.25;text-align:center}.ch b{font-size:.78rem;color:var(--org)}
 .ch.on{outline:4px solid var(--mint)}.ch.no{opacity:.45}.ch.no img{filter:grayscale(1)}
+.bonus{display:flex;align-items:center;gap:14px;width:100%;margin-bottom:14px;padding:16px;border-radius:24px;text-align:left;color:var(--ink);background:linear-gradient(135deg,#FFE680,#FFB347);box-shadow:0 6px 0 #E0912A,0 12px 28px rgba(255,159,67,.4);animation:pulse 1.8s ease-in-out infinite}
+.bonus .bs{font-size:2.8rem}.bonus b{display:block;font-size:1.3rem;font-weight:900}.bonus small{display:block;font-weight:700;font-size:.85rem}
+.bonus em{display:block;font-style:normal;font-size:1.25rem;font-weight:900;color:#C62828;margin-top:2px}
+.bonus.done{filter:grayscale(.85);opacity:.6;animation:none;box-shadow:var(--sh)}.bonus.done em{color:var(--ink)}
 </style></head>
 <body><div id="app">
 <canvas id="fx"></canvas><div id="toast"></div>
@@ -281,7 +285,7 @@ if(!Array.isArray(S.unlockedStages)||!S.unlockedStages.includes(1))S.unlockedSta
 if(!Array.isArray(S.clearedStages))S.clearedStages=[];
 S.coins=Number(S.coins)||0;if(!S.owned||typeof S.owned!=='object')S.owned={};if(!S.room||typeof S.room!=='object')S.room={};if(!Array.isArray(S.room.items))S.room.items=[];S.room.wall=S.room.wall|0;S.room.floor=S.room.floor|0;S.room.n=S.room.n|0;
 if(!S.themes||typeof S.themes!=='object')S.themes={};['wall','floor'].forEach(k=>{if(!Array.isArray(S.themes[k]))S.themes[k]=[0];if(!S.themes[k].includes(S.room[k]))S.themes[k].push(S.room[k])});
-if(!S.perfect||typeof S.perfect!=='object')S.perfect={};if(!S.daily||typeof S.daily!=='object')S.daily={};S.daily=Object.assign({date:'',p:{},c:{},all:0,streak:0,lastAll:''},S.daily);
+if(!S.perfect||typeof S.perfect!=='object')S.perfect={};if(!S.bonus||typeof S.bonus!=='object')S.bonus={};if(!S.daily||typeof S.daily!=='object')S.daily={};S.daily=Object.assign({date:'',p:{},c:{},all:0,streak:0,lastAll:''},S.daily);
 const IMG='https://mrs-shrimp.github.io/kuku-quest/';
 const AV=[['girl-1','ククリン（しんまいゆうしゃのすがた）',1],['boy-1','ククル（しんまいゆうしゃのすがた）',1],['girl-2','ククリン（かけだしゆうしゃのすがた）',5],['boy-2','ククル（かけだしゆうしゃのすがた）',5],['girl-3','ククリン（たびするゆうしゃのすがた）',8],['boy-3','ククル（たびするゆうしゃのすがた）',8],['girl-4','ククリン（せいちょうしたゆうしゃのすがた）',11],['boy-4','ククル（せいちょうしたゆうしゃのすがた）',11],['girl-5','ククリン（たたかうゆうしゃのすがた）',14],['boy-5','ククル（たたかうゆうしゃのすがた）',14],['girl-6','ククリン（まほうせんしのすがた）',16],['boy-6','ククル（まほうせんしのすがた）',16],['girl-7','ククリン（きらめきのまほうせんしのすがた）',18],['boy-7','ククル（きらめきのまほうせんしのすがた）',18],['girl-8','ククリン（でんせつのまほうせんしのすがた）',20],['boy-8','ククル（でんせつのまほうせんしのすがた）',20]].map(a=>({path:'image/'+a[0]+'.png',name:a[1],minLevel:a[2]}));
 const PETS=[['pet-1','えびざらし',1],['pet-2','わさびん',5],['pet-3','つよいえびざらし',10],['pet-4','えびざらしとわさびん',15],['pet-5','つよいえびざらしとわさびん',20]].map(a=>({path:'image/'+a[0]+'.png',name:a[1],minLevel:a[2]}));
@@ -306,7 +310,7 @@ function loop(){cx.clearRect(0,0,cv.width,cv.height);ps=ps.filter(p=>p.l>0);ps.f
 function toast(t){const e=$('toast');e.textContent=t;e.classList.remove('show');void e.offsetWidth;e.classList.add('show')}
 /* home */
 const nextStage=()=>ORDER.find(s=>!S.clearedStages.includes(s))||ORDER[Math.floor(Math.random()*9)];
-function show(id){if(id=='pick')renderModes();if(id=='dan')renderDan();$('app').classList.toggle('wide',id=='room-s');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');scrollTo(0,0)}
+function show(id){if(id=='result')$('again').style.display=mode=='bonus'?'none':'';if(id=='pick')renderModes();if(id=='dan')renderDan();$('app').classList.toggle('wide',id=='room-s');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');scrollTo(0,0)}
 function goHome(){clearInterval(tInt);if(audio)audio.pause();render();show('home')}
 const MODES=[['🎴','じゅんばん','1から9まで じゅんに','seq'],['🎲','ランダム','ばらばらに でるよ','rand'],['🔗','しきと こたえを むすぼう','ペアを みつけよう','match'],['🎯','こたえから しきを えらぶ','こたえに なる しきは？','pickf'],['🍎','えを みて しきを かこう','おなじ かずずつの まとまり','pic'],['⏱️','タイムアタック','60びょうで なんもん？','time'],['🔁','まちがい直し','まちがえた もんだいを もう一度','fix'],['🔊','読み方れんしゅう','きいて、声に 出してみよう','listen']];
 function render(){
@@ -316,7 +320,7 @@ function render(){
   $('modes').innerHTML=MODES.map((m,i)=>`<button class="mode m${i%3}" onclick="go('${m[3]}')"><span>${m[0]}</span><div>${m[1]}<small>${m[2]}</small></div></button>`).join('');
   $('bc').textContent=S.bestCombo;$('tc').textContent=S.totalCorrect;
 }
-const go=m=>({listen:startListen,match:startMatch,pickf:startPF,pic:startPic})[m]?({listen:startListen,match:startMatch,pickf:startPF,pic:startPic})[m]():startQuiz(m);
+const go=m=>({listen:startListen,match:startMatch,pickf:startPF,pic:startPic,bonus:()=>startBonus()})[m]?({listen:startListen,match:startMatch,pickf:startPF,pic:startPic,bonus:()=>startBonus()})[m]():startQuiz(m);
 /* quiz (5のだん専用) */
 const DANS=[5,2,3,4];let STAGE=DANS.includes(S.selectedDan)?S.selectedDan:5;let miss=0,perfNow=false,gen=0,Q=[],mode='seq',fin=false,okN=0,coinsGot=0;
 const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
@@ -332,7 +336,7 @@ function startQuiz(m){gen++;miss=0;$('pic').style.display='none';mode=m;stage=ST
   const tick=()=>{const s=(Date.now()-t0)/1000;if(m=='time'){const l=Math.max(0,Math.ceil(60-s));$('tm').textContent=l;if(l<=0)finish()}else $('tm').textContent=Math.floor(s)};tick();tInt=setInterval(tick,250);load()}
 function load(){if(fin)return;input='';$('ans').textContent='';const e=$('eq'),b=Q[idx];e.className='eq';e.textContent=stage+' × '+b;
   $('kana').textContent=kukuData[stage][b].first;
-  document.querySelectorAll('#dots i').forEach((d,i)=>d.className=i<idx?'d':i==idx?'c':'');say(1);busy=false}
+  document.querySelectorAll('#dots i').forEach((d,i)=>d.className=i<idx?'d':i==idx?'c':'');if(mode!='bonus')say(1);busy=false}
 function say(n,cb){let done=false;const g=gen,f=()=>{if(!done){done=true;if(g===gen)cb&&cb()}};
   try{if(audio)audio.pause();audio=new Audio(`audio/${stage}-${Q[idx]}_${n}.wav`);audio.onended=f;audio.play().catch(f)}catch(e){f()}
   if(cb)setTimeout(f,2500)}
@@ -345,15 +349,16 @@ function key(n){if(mode=='pic')return pkey(n);if(busy||fin||input.length>=2)retu
     const e=$('eq');e.className='eq ok';e.textContent=stage+' × '+b+' ＝ '+ans;$('kana').textContent=kukuData[stage][b].first+kukuData[stage][b].second;
     sOK();burst(combo>=3?18:8);
     if(combo>=3){const c=$('combo');c.textContent='🔥 '+combo+' れんぞく！';c.classList.remove('show');void c.offsetWidth;c.classList.add('show')}
-    earned++;gain(1);S.coins++;coinsGot++;save();qEv('correct',1);qEv('combo',combo,1);if(mode=='time')$('cnt').textContent=okN+' もん';
-    say(2,()=>{idx++;if(fin)return;if(idx>=Q.length)finish();else load()});
+    earned++;gain(1);addCoin(mode=='bonus'?0:RATE[STAGE]);save();qEv('correct',1);qEv('combo',combo,1);if(mode=='time')$('cnt').textContent=okN+' もん';
+    if(mode=='bonus'){const g=gen;setTimeout(()=>{if(g===gen&&!fin)bonusNext()},140)}else say(2,()=>{idx++;if(fin)return;if(idx>=Q.length)finish();else load()});
   }else{miss++;S.mistakeProblems[k]=(S.mistakeProblems[k]||0)+1;S.practiceMastery[k]=0;combo=0;S.currentCombo=0;save();
+    if(mode=='bonus'){bonusFail('ミス！');return}
     sNG();const e=$('eq'),g=gen;e.className='eq ng';setTimeout(()=>{e.className='eq';if(fin||g!==gen)return;clr();say(1)},450)}}
 function gain(a){S.exp+=a;while(S.exp>=need(S.level)){S.exp-=need(S.level);S.level++;lvUp=true}if(lvUp)autoUpgrade();save()}
 function finish(){if(fin)return;fin=true;clearInterval(tInt);if(audio)audio.pause();
   const sec=Math.round((Date.now()-t0)/1000);let rec='',title='クリア！',sub=sec+'びょう',first=false;
   if(mode=='time'){title='タイムアップ！';sub=okN+'もん せいかい';const o=S.timeAttackBest||0;if(okN>o){S.timeAttackBest=okN;rec=o?'🎉 しんきろく！':'はじめての きろく！'}else rec='さいこう '+o+'もん'}
-  else{gain(5);earned+=5;S.coins+=10;coinsGot+=10;
+  else{gain(5);earned+=5;addCoin(CLEAR[STAGE]);
     if(mode=='seq'){first=!S.clearedStages.includes(STAGE);if(first)S.clearedStages.push(STAGE);
       S.stageClearCounts[STAGE]=(S.stageClearCounts[STAGE]||0)+1;
       const old=S.stageBestTimes[STAGE],r=old==null||sec<old;if(r)S.stageBestTimes[STAGE]=sec;
@@ -390,17 +395,36 @@ const PM=['seq','rand','match','pickf','pic','time'];
 const perfN=n=>PM.filter(m=>(S.perfect[n]||{})[m]).length;
 function markPerfect(){perfNow=false;if(miss>0||!PM.includes(mode))return;if(mode=='time'&&okN<9)return;
   perfNow=true;const P=S.perfect[STAGE]=S.perfect[STAGE]||{};if(!P[mode]){P[mode]=1;save()}}
-function renderModes(){$('modes').innerHTML=MODES.map((m,i)=>`<button class="mode m${i%3}" onclick="go('${m[3]}')"><span>${m[0]}</span><div>${m[1]}<small>${m[2]}</small></div>${(S.perfect[STAGE]||{})[m[3]]?'<b style="margin-left:auto;color:var(--org)">⭐ ノーミス</b>':''}</button>`).join('')}
+const RATE={2:.4,3:.6,4:.8,5:.6},CLEAR={2:2,3:4,4:6,5:4},BONUS={2:80,3:120,4:200,5:120},BSEC=50,BN=30;
+function addCoin(x){S.coinPart=(S.coinPart||0)+x;const g=Math.floor(S.coinPart+1e-9);S.coinPart-=g;S.coins+=g;coinsGot+=g}
+const bonusReady=n=>S.bonus[n]!==ymd(0);
+let bTry=0;
+function startBonus(again){if(!bonusReady(STAGE)){toast('きょうの ボーナスは クリアずみ！\nまた あした きてね');return}
+  if(!again)bTry=0;bTry++;gen++;miss=0;$('pic').style.display='none';mode='bonus';stage=STAGE;idx=0;input='';busy=false;earned=0;lvUp=false;fin=false;okN=0;coinsGot=0;
+  Q=[];let p=0;for(let i=0;i<BN;i++){let b;do{b=1+Math.floor(Math.random()*9)}while(b==p);Q.push(b);p=b}
+  t0=Date.now();clearInterval(tInt);$('dots').innerHTML=Q.map(()=>'<i></i>').join('');show('quiz');
+  const g=gen,tick=()=>{if(g!==gen||fin)return;const l=Math.max(0,Math.ceil(BSEC-(Date.now()-t0)/1000));$('tm').textContent=l;if(l<=0)bonusFail('じかんぎれ！')};
+  tick();tInt=setInterval(tick,200);load()}
+function bonusFail(msg){if(fin)return;busy=true;clearInterval(tInt);combo=0;S.currentCombo=0;save();sNG();toast(msg+'\nさいしょから やりなおし！');
+  const g=gen;setTimeout(()=>{if(g!==gen||fin)return;startBonus(true)},1000)}
+function bonusNext(){idx++;if(idx>=Q.length)bonusWin();else load()}
+function bonusWin(){fin=true;clearInterval(tInt);const sec=((Date.now()-t0)/1000).toFixed(1),r=BONUS[STAGE];
+  S.coins+=r;S.bonus[STAGE]=ymd(0);S.playCount++;S.lastAdventureAt=new Date().toISOString();save();qEv('clear',1);
+  $('rtitle').textContent='ボーナスクリア！！';$('rt').textContent=STAGE+'のだん '+sec+'びょう（'+bTry+'かいめ）';$('rexp').textContent='+'+earned+' EXP';
+  $('rcoin').textContent='🪙 +'+r+' コイン！！';$('rrec').textContent='🎉 すごい！ また あした ちょうせんしてね';
+  show('result');sWIN();burst(70,innerWidth/2,innerHeight*.3,['🪙','⭐','✨','🎉','💰']);setTimeout(()=>{burst(50,innerWidth/2,innerHeight*.4,['🪙','💰'])},600);
+  if(lvUp)setTimeout(()=>{toast('レベルアップ！ Lv.'+S.level+newForm());sUP();burst(30)},1500)}
+function renderModes(){const bd=bonusReady(STAGE);$('modes').innerHTML=`<button class="bonus ${bd?'':'done'}" ${bd?"onclick=\"go('bonus')\"":'disabled'}><span class="bs">🎁</span><div><b>今日のボーナスステージ</b><small>${BN}もん ノーミス・${BSEC}びょう いない！</small><em>${bd?'クリアで 🪙 '+BONUS[STAGE]+' ゲット！！':'きょうは クリアずみ ✓ また あした！'}</em></div></button>`+MODES.map((m,i)=>`<button class="mode m${i%3}" onclick="go('${m[3]}')"><span>${m[0]}</span><div>${m[1]}<small>${m[2]}</small></div>${(S.perfect[STAGE]||{})[m[3]]?'<b style="margin-left:auto;color:var(--org)">⭐ ノーミス</b>':''}</button>`).join('')}
 function renderDan(){const c2=S.clearedStages.includes(2);
-  $('dlist').innerHTML=DANS.map(n=>`<button class="dcard d${n}" onclick="pickDan(${n})">${n}のだん<small>${perfN(n)==PM.length?'⭐ クリアずみ':'ノーミスクリア '+perfN(n)+'/'+PM.length}</small>${n!=5&&!S.clearedStages.includes(n)?'<span class="new">NEW!</span>':''}</button>`).join('')}
+  $('dlist').innerHTML=DANS.map(n=>`<button class="dcard d${n}" onclick="pickDan(${n})">${n}のだん<small>${perfN(n)==PM.length?'⭐ クリアずみ':'ノーミスクリア '+perfN(n)+'/'+PM.length}　${bonusReady(n)?'🎁 ボーナス ちょうせんできる':'🎁 ボーナス クリアずみ'}</small>${n!=5&&!S.clearedStages.includes(n)?'<span class="new">NEW!</span>':''}</button>`).join('')}
 function pickDan(n){STAGE=n;S.selectedDan=n;save();$('pickT').textContent=n+'のだん';show('pick')}
 function quit(){gen++;fin=true;busy=false;clearInterval(tInt);if(audio)audio.pause();show('pick')}
 /* 新モード */
 const all9=[1,2,3,4,5,6,7,8,9],FR=['🍎','🍓','🍪','🍬','⭐','🐟','🍩','🍙','🎈'];
-function ok1(k){S.totalAnswered++;S.totalCorrect++;combo++;S.currentCombo=combo;S.bestCombo=Math.max(S.bestCombo||0,combo);S.practiceMastery[k]=(S.practiceMastery[k]||0)+1;okN++;earned++;gain(1);S.coins++;coinsGot++;save();qEv('correct',1);qEv('combo',combo,1);sOK();burst(combo>=3?18:8)}
+function ok1(k){S.totalAnswered++;S.totalCorrect++;combo++;S.currentCombo=combo;S.bestCombo=Math.max(S.bestCombo||0,combo);S.practiceMastery[k]=(S.practiceMastery[k]||0)+1;okN++;earned++;gain(1);addCoin(mode=='bonus'?0:RATE[STAGE]);save();qEv('correct',1);qEv('combo',combo,1);sOK();burst(combo>=3?18:8)}
 function ng1(k){miss++;S.totalAnswered++;S.mistakeProblems[k]=(S.mistakeProblems[k]||0)+1;S.practiceMastery[k]=0;combo=0;S.currentCombo=0;save();sNG()}
 function init(m){gen++;miss=0;mode=m;stage=STAGE;idx=0;earned=0;lvUp=false;fin=false;okN=0;coinsGot=0;busy=false;t0=Date.now();clearInterval(tInt)}
-function showRes(title,sub){gain(5);earned+=5;S.coins+=10;coinsGot+=10;S.playCount++;S.lastAdventureAt=new Date().toISOString();save();markPerfect();qEv('clear',1);qEv('mode:'+mode,1);if(mode=='time')qEv('ta',okN,1);
+function showRes(title,sub){gain(5);earned+=5;addCoin(CLEAR[STAGE]);S.playCount++;S.lastAdventureAt=new Date().toISOString();save();markPerfect();qEv('clear',1);qEv('mode:'+mode,1);if(mode=='time')qEv('ta',okN,1);
   $('rtitle').textContent=title;$('rt').textContent=sub;$('rexp').textContent='+'+earned+' EXP';$('rcoin').textContent='🪙 +'+coinsGot+' コイン';$('rrec').textContent=perfNow?'✨ ノーミス！':'';
   $('again').onclick=()=>go(mode);show('result');sWIN();burst(40,innerWidth/2,innerHeight*.3,['⭐','✨','🪙','🎉']);
   if(lvUp)setTimeout(()=>{toast('レベルアップ！ Lv.'+S.level+newForm());sUP();burst(30)},900)}
