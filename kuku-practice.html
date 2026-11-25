@@ -113,7 +113,7 @@ h1{margin:0;font-size:1.5rem;letter-spacing:.04em}.sub{margin:2px 0 0;font-size:
 #room::before{z-index:1}
 .mimg{width:84px;height:84px;object-fit:contain;flex:none;animation:bob 2.4s ease-in-out infinite}
 .dcard{position:relative;display:block;width:100%;padding:26px 18px;margin-bottom:16px;border-radius:28px;background:#fff;box-shadow:var(--sh);font-size:2.2rem;font-weight:900;border-left:10px solid var(--sky);text-align:left}
-.dcard.d2{border-color:var(--mint)}.dcard.d3{border-color:var(--org)}.dcard.d4{border-color:var(--cor)}.dcard.d6{border-color:var(--sun)}.dcard.d7{border-color:#8E9AF0}.dcard.d8{border-color:#FF8FA3}.dcard small{display:block;font-size:.9rem;font-weight:600;opacity:.65}
+.dcard.d2{border-color:var(--mint)}.dcard.d3{border-color:var(--org)}.dcard.d4{border-color:var(--cor)}.dcard.d6{border-color:var(--sun)}.dcard.d7{border-color:#8E9AF0}.dcard.d8{border-color:#FF8FA3}.dcard.d9{border-color:#26C6DA}.dcard small{display:block;font-size:.9rem;font-weight:600;opacity:.65}
 .new{position:absolute;right:14px;top:-10px;background:var(--cor);color:#fff;border-radius:99px;padding:4px 14px;font-size:.95rem;font-weight:900;transform:rotate(6deg);animation:pulse 1.6s ease-in-out infinite;box-shadow:0 3px 0 #D9534F}
 @media (min-width:900px){#app.wide{max-width:1320px}.rgrid{display:grid;grid-template-columns:1fr 400px;gap:18px;align-items:start}#room-s .sec{display:none}#room{aspect-ratio:auto;height:calc(100vh - 170px);height:calc(100dvh - 170px);min-height:380px}.rr .tabs{flex-wrap:wrap;white-space:normal;padding-top:0}.rr .tray{max-height:calc(100vh - 420px);overflow-y:auto;padding:4px}.tr{width:84px;height:84px;font-size:2.4rem}}
 #tools{flex-wrap:wrap}.shp{padding:0}.it .em{min-height:64px;display:flex;align-items:center;justify-content:center}.tr{display:inline-flex;align-items:center;justify-content:center}
@@ -288,7 +288,7 @@ if(!Array.isArray(S.unlockedStages)||!S.unlockedStages.includes(1))S.unlockedSta
 if(!Array.isArray(S.clearedStages))S.clearedStages=[];
 S.coins=Number(S.coins)||0;if(!S.owned||typeof S.owned!=='object')S.owned={};if(!S.room||typeof S.room!=='object')S.room={};if(!Array.isArray(S.room.items))S.room.items=[];S.room.wall=S.room.wall|0;S.room.floor=S.room.floor|0;S.room.n=S.room.n|0;
 if(!S.themes||typeof S.themes!=='object')S.themes={};['wall','floor'].forEach(k=>{if(!Array.isArray(S.themes[k]))S.themes[k]=[0];if(!S.themes[k].includes(S.room[k]))S.themes[k].push(S.room[k])});
-if(!S.perfect||typeof S.perfect!=='object')S.perfect={};if(!S.bonus||typeof S.bonus!=='object')S.bonus={};if(!S.daily||typeof S.daily!=='object')S.daily={};S.daily=Object.assign({date:'',p:{},c:{},all:0,streak:0,lastAll:''},S.daily);
+if(!S.perfect||typeof S.perfect!=='object')S.perfect={};if(!S.bonus||typeof S.bonus!=='object')S.bonus={};if(!Array.isArray(S.paints))S.paints=[];if(!S.daily||typeof S.daily!=='object')S.daily={};S.daily=Object.assign({date:'',p:{},c:{},all:0,streak:0,lastAll:''},S.daily);
 const IMG='https://mrs-shrimp.github.io/kuku-quest/';
 const AV=[['girl-1','ククリン（しんまいゆうしゃのすがた）',1],['boy-1','ククル（しんまいゆうしゃのすがた）',1],['girl-2','ククリン（かけだしゆうしゃのすがた）',5],['boy-2','ククル（かけだしゆうしゃのすがた）',5],['girl-3','ククリン（たびするゆうしゃのすがた）',8],['boy-3','ククル（たびするゆうしゃのすがた）',8],['girl-4','ククリン（せいちょうしたゆうしゃのすがた）',11],['boy-4','ククル（せいちょうしたゆうしゃのすがた）',11],['girl-5','ククリン（たたかうゆうしゃのすがた）',14],['boy-5','ククル（たたかうゆうしゃのすがた）',14],['girl-6','ククリン（まほうせんしのすがた）',16],['boy-6','ククル（まほうせんしのすがた）',16],['girl-7','ククリン（きらめきのまほうせんしのすがた）',18],['boy-7','ククル（きらめきのまほうせんしのすがた）',18],['girl-8','ククリン（でんせつのまほうせんしのすがた）',20],['boy-8','ククル（でんせつのまほうせんしのすがた）',20]].map(a=>({path:'image/'+a[0]+'.png',name:a[1],minLevel:a[2]}));
 const PETS=[['pet-1','えびざらし',1],['pet-2','わさびん',5],['pet-3','つよいえびざらし',10],['pet-4','えびざらしとわさびん',15],['pet-5','つよいえびざらしとわさびん',20]].map(a=>({path:'image/'+a[0]+'.png',name:a[1],minLevel:a[2]}));
@@ -325,7 +325,7 @@ function render(){
 }
 const go=m=>({listen:startListen,match:startMatch,pickf:startPF,pic:startPic,bonus:()=>startBonus()})[m]?({listen:startListen,match:startMatch,pickf:startPF,pic:startPic,bonus:()=>startBonus()})[m]():startQuiz(m);
 /* quiz (5のだん専用) */
-const DANS=[5,2,3,4,6,7,8];let STAGE=DANS.includes(S.selectedDan)?S.selectedDan:5;let miss=0,perfNow=false,gen=0,Q=[],mode='seq',fin=false,okN=0,coinsGot=0;
+const DANS=[5,2,3,4,6,7,8,9];let STAGE=DANS.includes(S.selectedDan)?S.selectedDan:5;let miss=0,perfNow=false,gen=0,Q=[],mode='seq',fin=false,okN=0,coinsGot=0;
 const shuf=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
 $('pad').innerHTML=[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="key(${n})">${n}</button>`).join('')+`<button class="clr" onclick="clr()">けす</button><button onclick="key(0)">0</button><span></span>`;
 function startQuiz(m){gen++;miss=0;$('pic').style.display='none';mode=m;stage=STAGE;idx=0;input='';busy=false;earned=0;lvUp=false;fin=false;okN=0;coinsGot=0;
@@ -398,7 +398,7 @@ const PM=['seq','rand','match','pickf','pic','time'];
 const perfN=n=>PM.filter(m=>(S.perfect[n]||{})[m]).length;
 function markPerfect(){perfNow=false;if(miss>0||!PM.includes(mode))return;if(mode=='time'&&okN<9)return;
   perfNow=true;const P=S.perfect[STAGE]=S.perfect[STAGE]||{};if(!P[mode]){P[mode]=1;save()}}
-const RATE={2:.1,3:.6,4:.8,5:.15,6:1,7:1.2,8:1.4},CLEAR={2:1,3:4,4:6,5:1,6:8,7:10,8:12},BONUS={2:80,3:120,4:200,5:120,6:260,7:320,8:380},BSEC=50,BN=30;
+const RATE={2:.1,3:.6,4:.8,5:.15,6:1,7:1.2,8:1.4,9:1.6},CLEAR={2:1,3:4,4:6,5:1,6:8,7:10,8:12,9:14},BONUS={2:80,3:120,4:200,5:120,6:260,7:320,8:380,9:440},BSEC=50,BN=30;
 const SPECIAL={};
 const mul=(n=STAGE)=>(SPECIAL[n]||{}).m||1,bonusAmt=(n=STAGE)=>Math.round(BONUS[n]*((SPECIAL[n]||{}).b||1));
 const spText=n=>'✨ とくべつきかん！ '+n+'のだんは 多めに コインが もらえるよ！';
@@ -491,8 +491,10 @@ const CATS=[
 ['しぜん','☀️ たいよう 20,🌈 にじ 40,☁️ くも 10,❄️ ゆき 12,⛄ ゆきだるま 30,⚡ かみなり 20,🌊 なみ 25,🔥 ほのお 20,💧 しずく 8,🌋 かざん 60,🏔️ やま 50,🏝️ しま 70,🪐 わくせい 70,☄️ すいせい 50,🌟 かがやくほし 30'],
 ['たからもの','🎁 プレゼント 25,💎 ほうせき 100,👑 かんむり 150,💰 おかね 60,🗝️ かぎ 30,🏆 トロフィー 120,🪙 コイン 10,💍 ゆびわ 90,🧰 どうぐばこ 30,🔮 クリスタル 80,📜 まきもの 25,⚔️ つるぎ 70,🛡️ たて 60,🏰 おしろ 250,🧞 まじん 200'],
 ['バッジ','🏅 メダル 20,🥇 1ばん 30,🥈 2ばん 25,🥉 3ばん 20,🎖️ くんしょう 40,💯 100てん 50,🔥 がんばり 30,🚀 ロケット 60,🎯 めいちゅう 35,🧠 のうみそ 45,📚 ほんのむし 30,✍️ かきとり 25,🎓 はかせ 90,🦸 ヒーロー 80,🦄 ユニコーン 100,🐲 ドラゴン 120,🦉 ふくろう 50,🦅 わし 70,🦈 サメ 80,🐅 とら 70,🦖 きょうりゅう 100,🧙 まほうつかい 90,🥷 にんじゃ 90,🤖 ロボ 70,👾 インベーダー 60,💫 きらきら 40,✨ ピカピカ 30,🌈 にじ 50,🍀 ラッキー 35,🔔 ベル 20,🛡️ まもり 55,🏹 ゆみ 55,🪄 まほうのつえ 85,🧿 おまもり 40,♾️ むげん 150,💎 ダイヤ 200,👑 おうさま 250,🌠 ながれぼし 120,🎺 ファンファーレ 60,🏁 ゴール 45'],
-['かたち','▭ ちょうほうけい 50,◼ せいほうけい 50,◣ ちょくかくさんかっけい 50']];
-const ITEMS=[];CATS.forEach((c,ci)=>c[1].split(',').forEach((s,i)=>{const [e,n,p]=s.split(' ');ITEMS.push({id:ci+'_'+i,e,n,p:Math.max(10,Math.round(+p*6/5)*5),c:ci,bd:c[0]=='バッジ',shape:c[0]=='かたち'?['rect','square','tri'][i]:null})}));
+['かたち','▭ ちょうほうけい 50,◼ せいほうけい 50,◣ ちょくかくさんかっけい 50,● えん 50'],
+['ペット','🐱 ねこ 2000,🐥 ひよこ 2000,🐶 いぬ 2000,🐼 パンダ 2000,🐧 ペンギン 2000,🤖 ロボット 2000,🦄 ユニコーン 2000']];
+const PETIMG=['pet-cat','pet-chic','pet-dog','pet-panda','pet-penguin','pet-robot','pet-unicorn'];
+const ITEMS=[];CATS.forEach((c,ci)=>c[1].split(',').forEach((s,i)=>{const [e,n,p]=s.split(' ');ITEMS.push({id:ci+'_'+i,e,n,p:c[0]=='ペット'?+p:Math.max(10,Math.round(+p*6/5)*5),c:ci,pic:c[0]=='ペット'?'image/'+PETIMG[i]+'.png':null,bd:c[0]=='バッジ',shape:c[0]=='かたち'?['rect','square','tri','circle'][i]:null})}));
 const VIRT={hero:{id:'hero',img:1,e:'🧒'},pet:{id:'pet',img:1,e:'🐾'}};
 const byId=id=>VIRT[id]||ITEMS.find(i=>i.id==id);
 const WALLS=[['ピンク','#FFE3EC',0],['そらいろ','#DDF1FF',60],['みどり','#E2F7E6',60],['きいろ','#FFF1C9',60],['むらさき','#EBE3FF',60],['しろ','#FFFFFF',60],['オレンジ','#FFD9C2',60],['ミント','#C9F0EC',60],
@@ -501,11 +503,11 @@ const FLOORS=[['ウッド','#F0D2A6',0],['こげちゃ','#D8B08A',60],['みど�
 ['チェック','conic-gradient(#fff 25%,#F2D7B8 0 50%,#fff 0 75%,#F2D7B8 0) 0 0/50px 50px',200],['ウッドばん','repeating-linear-gradient(90deg,#E9C48F 0 60px,#DDB27A 60px 62px)',150],['タイル','conic-gradient(#E6F0F8 25%,#fff 0 50%,#E6F0F8 0 75%,#fff 0) 0 0/50px 50px',180],['しばふ','repeating-linear-gradient(#BFE6B0 0 16px,#CDEEC0 16px 32px)',250],['ストライプ','repeating-linear-gradient(90deg,#FFD9E3 0 30px,#fff 30px 60px)',150],['にじ','linear-gradient(90deg,#FFD1D1,#FFE9C9,#FFFAC9,#D4F5D4,#D0E8FF,#E3D9FF)',400]].map(a=>({n:a[0],b:a[1],p:a[2]*2}));
 let shopC=0,roomC=0,sel=null,drag=null;
 const placed=id=>S.room.items.filter(o=>o.id==id).length;
-function tabs(el,cur,fn,all){$(el).innerHTML=CATS.map(c=>c[0]).concat(all==1?['かべがみ','ゆか']:Array.isArray(all)?all:[]).map((n,i)=>`<button class="tab ${i==cur?'on':''}" onclick="${fn}(${i})">${n}</button>`).join('')}
+function tabs(el,cur,fn,all){$(el).innerHTML=CATS.map(c=>c[0]).concat(all==1?['かべがみ','ゆか','形用ペンキ']:Array.isArray(all)?all:[]).map((n,i)=>`<button class="tab ${i==cur?'on':''}" onclick="${fn}(${i})">${n}</button>`).join('')}
 function openShop(){show('shop');drawShop()}
 function setShop(i){shopC=i;drawShop()}
 function drawShop(){tabs('stabs',shopC,'setShop',1);$('scoin').textContent=S.coins;
-  if(shopC>=CATS.length){$('sgrid').innerHTML=themeShop(shopC==CATS.length?'wall':'floor');return}
+  if(shopC>=CATS.length){$('sgrid').innerHTML=shopC==CATS.length+2?paintShop():themeShop(shopC==CATS.length?'wall':'floor');return}
   $('sgrid').innerHTML=ITEMS.filter(i=>i.c==shopC).map(i=>{const o=S.owned[i.id]||0,ok=S.coins>=i.p;
     return `<div class="it ${i.bd?'bd':''}"><div class="em">${ico(i)}</div><b>${i.n}</b><span>${o?'もってる ×'+o:'まだ ない'}</span><button class="buy ${ok?'':'no'}" onclick="buy('${i.id}')">🪙 ${i.p} ${ok?'かう':'<small>あと '+(i.p-S.coins)+'</small>'}</button></div>`}).join('')}
 function buy(id){const i=byId(id);if(!i)return;if(S.coins<i.p){sNG();toast('コインが たりないよ\nあと '+(i.p-S.coins)+' 🪙');return}
@@ -521,6 +523,11 @@ function drawRoom(){const R=S.room,rm=$('room'),w=Math.min(rm.clientWidth,rm.cli
 function theme(k,i){if(!S.themes[k].includes(i))return;S.room[k]=i;save();drawRoom()}
 function themeShop(k){const L=k=='wall'?WALLS:FLOORS,own=S.themes[k];return L.map((t,i)=>{const o=own.includes(i),ok=S.coins>=t.p;
   return `<div class="it"><div style="height:64px;border-radius:14px;margin-bottom:6px;box-shadow:inset 0 0 0 3px #fff,var(--sh);background:${t.b}"></div><b>${t.n}</b><span>${o?'もってる ✓':'まだ ない'}</span>${o?'':`<button class="buy ${ok?'':'no'}" onclick="buyTheme('${k}',${i})">🪙 ${t.p} ${ok?'かう':'<small>あと '+(t.p-S.coins)+'</small>'}</button>`}</div>`}).join('')}
+function paintShop(){return `<p class="tip" style="grid-column:1/-1;margin:0">かたちの いろに つかえる ペンキだよ！（へやで かたちを えらぶと つかえるよ）</p>`+PAINTS.map((g,i)=>{const o=S.paints.includes(i),ok=S.coins>=g.p;
+  return `<div class="it"><div style="width:72px;height:72px;margin:6px auto">${shSvg('circle','g'+i,'pv'+i)}</div><b>${g.n}</b><span>${o?'もってる ✓':'まだ ない'}</span>${o?'':`<button class="buy ${ok?'':'no'}" onclick="buyPaint(${i})">🪙 ${g.p} ${ok?'かう':'<small>あと '+(g.p-S.coins)+'</small>'}</button>`}</div>`}).join('')}
+function buyPaint(i){const g=PAINTS[i];if(!g||S.paints.includes(i))return;
+  if(S.coins<g.p){sNG();toast('コインが たりないよ\nあと '+(g.p-S.coins)+' 🪙');return}
+  S.coins-=g.p;S.paints.push(i);save();sOK();burst(20);toast('🎨 '+g.n+' ゲット！\nかたちの いろに つかえるよ');drawShop()}
 function buyTheme(k,i){const t=(k=='wall'?WALLS:FLOORS)[i];if(!t||S.themes[k].includes(i))return;
   if(S.coins<t.p){sNG();toast('コインが たりないよ\nあと '+(t.p-S.coins)+' 🪙');return}
   S.coins-=t.p;S.themes[k].push(i);save();sOK();burst(14);toast('🎨 '+t.n+' ゲット！\nへやで えらぼう');drawShop()}
@@ -535,26 +542,37 @@ function put(id){const R=S.room;if(placed(id)>=(S.owned[id]||0)){toast('ぜん�
   R.n++;R.items.push({u:R.n,id,x:.3+Math.random()*.4,y:.45+Math.random()*.4,s:1,r:0,...(byId(id).shape?{col:4,w:byId(id).shape=='rect'?197:156,h:byId(id).shape=='rect'?123:156}:{})});sel=R.n;save();drawRoom()}
 const PAL=['#FF8FA3','#FFB26B','#FFD93D','#7BD88F','#5BC0EB','#8E9AF0','#C792EA','#FFFFFF','#CFD8DC','#8D6E63','#FF6B6B','#3DCBA0'];
 const SHP={rect:'0,0 100,0 100,100 0,100',square:'0,0 100,0 100,100 0,100',tri:'0,0 0,100 100,100'};
-const shSvg=(sh,col)=>`<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style="display:block;overflow:visible"><polygon points="${SHP[sh]}" fill="${PAL[col|0]}" stroke="#000" stroke-width="2.5" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/></svg>`;
+const PAINTS=[['ゆうやけ','d','#FF9A5A,#FF5E7E',600],['そらいろ','v','#7EC8FF,#E6F7FF',600],['みかん','d','#FFD54F,#FF8A3D',600],['いちご','d','#FF9EB5,#FF4F7B',600],['メロン','d','#D4FC79,#59D98E',600],['ぶどう','d','#C9A7FF,#7E57C2',600],
+['うみ','v','#6DD5FA,#2980B9',800],['もり','v','#A8E063,#2E8B57',800],['さくら','d','#FFE0EC,#FFB3CE,#FF8FB5',800],['レモンソーダ','d','#FFF59D,#80F0D0',800],
+['きんぎょ','r','#FFE29A,#FF7A59',1000],['ほし','r','#FFFDE7,#FFD54F,#FFA000',1000],['にじ','h','#FF8A8A,#FFD27A,#FFF59D,#9BE89B,#8EC9FF,#C4A5FF',1500],['パステルにじ','d','#FFC6C6,#FFE8B8,#E4FFC9,#C9F0FF,#E6D3FF',1500],
+['オーロラ','d','#7CF0C9,#7CB8FF,#C47CFF',1800],['まほうのよぞら','v','#3D4A8C,#8E6CC7,#FF9ACB',1800],['ひのたま','r','#FFF176,#FF9800,#E53935',2000],['こおり','d','#FFFFFF,#BDEBFF,#7EC8FF',2000],
+['キラキラぎん','d','#FFFFFF,#C8D0DA,#F4F6F8,#9AA5B1',2500],['キラキラきん','d','#FFF3B0,#F5B800,#FFE680,#C98B00',3000],['ダイヤモンド','r','#FFFFFF,#BDEBFF,#E6D3FF,#8EC9FF',3500],['ぎんが','r','#FFFFFF,#8E6CC7,#2A2F6B',3500],
+['でんせつのにじ','h','#FF5E7E,#FFB347,#FFF176,#59D98E,#4FC3F7,#9575CD,#FF5E7E',5000],['ぜんぶのせ','d','#FF9A9E,#FFE29A,#B8F2A8,#9AD8FF,#C4A5FF,#FF9ACB',5000]].map(a=>({n:a[0],t:a[1],c:a[2],p:Math.round(a[3]*.16/10)*10}));
+const gradCSS=g=>g.t=='r'?`radial-gradient(circle,${g.c})`:`linear-gradient(${g.t=='h'?'90deg':g.t=='v'?'180deg':'135deg'},${g.c})`;
+function fillOf(col,uid){if(typeof col==='string'&&col[0]=='g'){const g=PAINTS[+col.slice(1)];if(g){const st=g.c.split(',').map((c,i,a)=>`<stop offset="${a.length>1?i/(a.length-1)*100:0}%" stop-color="${c}"/>`).join('');
+  const d=g.t=='r'?`<radialGradient id="${uid}" cx="50%" cy="50%" r="70%">${st}</radialGradient>`:`<linearGradient id="${uid}" x1="0" y1="0" x2="${g.t=='v'?0:1}" y2="${g.t=='h'?0:1}">${st}</linearGradient>`;return{def:`<defs>${d}</defs>`,fill:`url(#${uid})`}}}
+  return{def:'',fill:PAL[col|0]||PAL[0]}}
+const shSvg=(sh,col,uid)=>{const f=fillOf(col,uid||'gx'),el=sh=='circle'?'<ellipse cx="50" cy="50" rx="50" ry="50"':`<polygon points="${SHP[sh]}"`;
+  return `<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style="display:block;overflow:visible">${f.def}${el} fill="${f.fill}" stroke="#000" stroke-width="2.5" stroke-linejoin="miter" vector-effect="non-scaling-stroke"/></svg>`};
 const shStyle=(sh,col)=>`background:${PAL[col|0]};${sh=='tri'?'clip-path:polygon(0 0,0 100%,100% 100%)':''}`;
-function ico(i){if(!i.shape)return i.e;const d={rect:[60,38],square:[44,44],tri:[48,44]}[i.shape];return `<div style="width:${d[0]}px;height:${d[1]}px">${shSvg(i.shape,4)}</div>`}
+function ico(i){if(i.pic)return `<img src="${IMG}${i.pic}" alt="" draggable="false" style="width:60px;height:60px;object-fit:contain" onerror="this.outerHTML='<span style=&quot;font-size:2.4rem&quot;>${i.e}</span>'">`;if(!i.shape)return i.e;const d={rect:[60,38],square:[44,44],tri:[48,44],circle:[46,46]}[i.shape];return `<div style="width:${d[0]}px;height:${d[1]}px">${shSvg(i.shape,4)}</div>`}
 const roomW=()=>{const r=$('room');return Math.min(r.clientWidth,r.clientHeight*1.5)||320};
 const dpx=(v,w)=>Math.max(1,v*w/1000),cl=v=>Math.min(1500,Math.max(1,Math.round(v*10)/10));
 function shapeDef(o){if(o.w==null){const q=Math.sqrt(o.ar||1),b=156*(o.s||1);o.w=cl(b*q);o.h=cl(b/q)}}
 function itemHTML(o,i,w){const base=w*.12*(o.s||1),cls=`pi ${i.bd?'bd':''} ${o.u==sel?'sel':''}`,
   pos=`left:${o.x*100}%;top:${o.y*100}%;z-index:${S.room.items.indexOf(o)+2};transform:translate(-50%,-50%) rotate(${o.r||0}deg)`;
-  if(i.img){const path=o.id=='hero'?S.heroIcon:S.companionIcon;return `<div class="${cls}" data-u="${o.u}" style="${pos};width:${Math.round(w*.28*(o.s||1))}px"><img src="${IMG}${path}" alt="" draggable="false" style="width:100%;display:block;pointer-events:none" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;text-align:center;font-size:${Math.round(w*.2*(o.s||1))}px">${i.e}</span></div>`}
-  if(i.shape){shapeDef(o);return `<div class="${cls} shp" data-u="${o.u}" style="${pos};width:${dpx(o.w,w)}px;height:${dpx(o.h,w)}px">${shSvg(i.shape,o.col)}</div>`}
+  if(i.img||i.pic){const path=i.pic||(o.id=='hero'?S.heroIcon:S.companionIcon);return `<div class="${cls}" data-u="${o.u}" style="${pos};width:${Math.round(w*(i.pic?.24:.28)*(o.s||1))}px"><img src="${IMG}${path}" alt="" draggable="false" style="width:100%;display:block;pointer-events:none" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;text-align:center;font-size:${Math.round(w*.2*(o.s||1))}px">${i.e}</span></div>`}
+  if(i.shape){shapeDef(o);return `<div class="${cls} shp" data-u="${o.u}" style="${pos};width:${dpx(o.w,w)}px;height:${dpx(o.h,w)}px">${shSvg(i.shape,o.col,'gp'+o.u)}</div>`}
   return `<div class="${cls}" data-u="${o.u}" style="${pos};font-size:${Math.round(base)}px">${i.e}</div>`}
 function toolsDraw(){const o=S.room.items.find(o=>o.u==sel),i=o&&byId(o.id),el=$('shtools');if(!i||!i.shape){el.style.display='none';return}
   const w=roomW();shapeDef(o);el.style.display='flex';
   const row=(k,lab)=>`<div class="dim">${lab}<button onclick="tool('${k}',-1)">−</button><input type="range" min="1" max="1500" value="${o[k]}" oninput="setDim('${k}',this.value)"><button onclick="tool('${k}',1)">＋</button><b id="v_${k}">${dpx(o[k],w).toFixed(1)}px</b></div>`;
-  el.innerHTML=row('w','よこ')+row('h','たて')+`<div style="width:100%;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">`+PAL.map((c,k)=>`<button class="sw ${k==(o.col|0)?'on':''}" style="background:${c}" onclick="tool('col',${k})"></button>`).join('')+`</div>`}
+  el.innerHTML=row('w','よこ')+row('h','たて')+`<div style="width:100%;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">`+PAL.map((c,k)=>`<button class="sw ${k===o.col?'on':''}" style="background:${c}" onclick="tool('col',${k})"></button>`).join('')+(S.paints||[]).map(i=>`<button class="sw ${o.col==='g'+i?'on':''}" style="background:${gradCSS(PAINTS[i])}" onclick="tool('col','g${i}')"></button>`).join('')+`</div>`}
 function setDim(k,v){const o=S.room.items.find(o=>o.u==sel);if(!o)return;o[k]=cl(+v);const w=roomW(),el=$('room').querySelector(`[data-u="${o.u}"]`);
   if(el)el.style[k=='w'?'width':'height']=dpx(o[k],w)+'px';const b=$('v_'+k);if(b)b.textContent=dpx(o[k],w).toFixed(1)+'px';save()}
 function tool(a,d){const R=S.room,o=R.items.find(o=>o.u==sel);if(!o)return;const i=byId(o.id),sh=i&&i.shape;if(sh)shapeDef(o);
   if(a=='del'){R.items=R.items.filter(x=>x!=o);sel=null}
-  else if(a=='s'){if(sh){const f=d>0?1.2:1/1.2;o.w=cl(o.w*f);o.h=cl(o.h*f)}else if(i&&i.img)o.s=Math.min(6,Math.max(.15,Math.round((o.s||1)*(d>0?1.2:1/1.2)*100)/100));else o.s=Math.min(2.4,Math.max(.6,Math.round(((o.s||1)+d)*10)/10))}
+  else if(a=='s'){if(sh){const f=d>0?1.2:1/1.2;o.w=cl(o.w*f);o.h=cl(o.h*f)}else if(i&&(i.img||i.pic))o.s=Math.min(6,Math.max(.15,Math.round((o.s||1)*(d>0?1.2:1/1.2)*100)/100));else o.s=Math.min(2.4,Math.max(.6,Math.round(((o.s||1)+d)*10)/10))}
   else if(a=='r')o.r=((o.r||0)+d+360)%360;
   else if(a=='w'||a=='h')o[a]=cl(o[a]+d);
   else if(a=='col')o.col=d;
