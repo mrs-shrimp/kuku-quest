@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>九九のきまり 反復学習</title>
+<style>
+:root{
+  --ink:#172334;--blue:#2368c7;--blue-bg:#eaf2ff;
+  --green:#16845b;--green-bg:#e9f7ef;--line:#dce3ec;
+  --bg:#f3f6fa;--white:#fff;--red:#c44840;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Yu Gothic UI","Hiragino Kaku Gothic ProN",Meiryo,sans-serif}
+button{font:inherit;cursor:pointer}
+.app{max-width:1120px;margin:0 auto;padding:22px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}
+h1{font-size:clamp(23px,3vw,34px);margin:0;font-weight:900}
+.top-actions{display:flex;gap:8px}
+button{border:0;border-radius:12px;font-weight:800;padding:12px 18px}
+.modebar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.mode{background:#fff;color:#455369;border:1px solid var(--line);font-size:clamp(14px,1.7vw,17px)}
+.mode.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,3vw,34px);box-shadow:0 10px 28px rgba(26,44,70,.07);min-height:590px;display:flex;flex-direction:column}
+.status{display:flex;justify-content:space-between;align-items:center;font-weight:800;color:#647185;font-size:15px}
+.progress{height:10px;border-radius:100px;background:#e9edf2;overflow:hidden;margin:13px 0 34px}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#397cda,#25a374);transition:width .25s}
+.question{font-size:clamp(22px,3vw,30px);font-weight:900;text-align:center;margin:4px 0 24px}
+.equation-wrap{flex:1;display:flex;align-items:center;justify-content:center;min-height:260px;padding:15px 0}
+.equation{display:flex;align-items:flex-end;justify-content:center;gap:clamp(4px,1vw,13px);width:100%;flex-wrap:nowrap;white-space:nowrap}
+.factor{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:clamp(45px,6vw,72px);flex:0 1 auto}
+.factor-label{height:24px;display:flex;align-items:flex-end;justify-content:center;font-size:clamp(10px,1.15vw,14px);font-weight:800;white-space:nowrap;line-height:1.1;color:#526176;padding-bottom:4px}
+.factor-value{height:clamp(54px,7vw,78px);min-width:clamp(45px,6vw,72px);display:flex;align-items:center;justify-content:center;font-size:clamp(34px,5.2vw,58px);font-weight:900;line-height:1;border-radius:10px}
+.multiplicand .factor-value{color:var(--blue);background:var(--blue-bg);outline:2px solid #cbdcf7}
+.multiplier .factor-value{color:var(--green);background:var(--green-bg);outline:2px solid #cce8d8}
+.symbol{height:clamp(54px,7vw,78px);display:flex;align-items:center;justify-content:center;font-size:clamp(32px,5vw,55px);font-weight:700;color:#273346;flex:0 0 auto;padding-bottom:0}
+.blank-value{color:var(--red)!important;border-bottom:5px solid #e5a39e;background:#fff2f0!important;outline:none!important;border-radius:0}
+.plain-blank{height:clamp(54px,7vw,78px);min-width:clamp(45px,6vw,72px);display:flex;align-items:center;justify-content:center;font-size:clamp(34px,5.2vw,58px);font-weight:900;color:var(--red);border-bottom:5px solid #e5a39e}
+.question-why{font-size:clamp(20px,2.5vw,27px);font-weight:900;text-align:center;margin:14px 0 20px}
+.controls{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:auto}
+.btn-answer{background:var(--green);color:white;min-width:150px;font-size:18px}
+.btn-next{background:var(--blue);color:white;min-width:190px;font-size:18px}
+.btn-explain{background:#f0f3f7;color:#334155;border:1px solid var(--line);min-width:160px;font-size:18px}
+.explanation{max-width:850px;margin:8px auto 22px;padding:15px 20px;border-radius:14px;background:#f5f8fc;border:1px solid var(--line);font-size:clamp(17px,2vw,22px);font-weight:800;line-height:1.65;text-align:center}
+.explanation[hidden]{display:none}
+.btn-light{background:#fff;color:#445268;border:1px solid var(--line)}
+button:disabled{opacity:.45;cursor:default}
+.done{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:20px}
+.done-title{font-size:clamp(30px,5vw,52px);font-weight:900}
+.done-text{font-size:22px;color:#59687c}
+@media(max-width:760px){
+  .app{padding:12px}
+  header{align-items:flex-start;flex-direction:column}
+  .panel{min-height:calc(100vh - 160px)}
+  .equation{gap:4px}
+  .factor{min-width:0}
+  .factor-value,.plain-blank{min-width:34px}
+  .factor-label{font-size:9px;letter-spacing:-.05em}
+  .symbol{font-size:30px}
+}
+@media(max-width:430px){
+  .equation{gap:2px;transform:scale(.94);transform-origin:center}
+  .factor-label{font-size:8px}
+  .factor-value,.plain-blank{font-size:30px}
+  .symbol{font-size:26px}
+  .mode{flex:1;padding:10px 8px}
+}
+body.projector .app{max-width:1450px}
+body.projector .panel{min-height:calc(100vh - 165px)}
+body.projector .equation{gap:clamp(9px,1.5vw,22px)}
+body.projector .factor-value,body.projector .plain-blank,body.projector .symbol{font-size:clamp(55px,7vw,88px);height:clamp(82px,10vw,112px);min-width:clamp(68px,8vw,100px)}
+body.projector .factor-label{font-size:clamp(14px,1.4vw,18px);height:34px}
+body.projector .question,body.projector .question-why{font-size:clamp(30px,3.5vw,42px)}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <h1>九九のきまり 反復学習</h1>
+  <div class="top-actions"><button class="btn-light" id="projector">大きく表示</button></div>
+</header>
+
+<nav class="modebar">
+  <button class="mode active" data-mode="one">きまり①を学習する</button>
+  <button class="mode" data-mode="two">きまり②を学習する</button>
+  <button class="mode" data-mode="mix">2つのきまりをまぜる</button>
+</nav>
+
+<section class="panel">
+  <div class="status"><span id="modeName">きまり①</span><span id="count">1 / 10</span></div>
+  <div class="progress"><div class="progress-fill" id="progress"></div></div>
+
+  <div id="play">
+    <div class="question">□に入る数字は なにかな？</div>
+    <div class="equation-wrap"><div class="equation" id="equation"></div></div>
+    <div class="question-why">その数字が入るのは なぜかな？</div>
+    <div class="explanation" id="explanation" hidden></div>
+    <div class="controls">
+      <button class="btn-answer" id="showAnswer">答えを見る</button>
+      <button class="btn-explain" id="readExplanation">せつめいをよむ</button>
+      <button class="btn-next" id="next">次へ →</button>
+    </div>
+  </div>
+
+</section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const state={mode:"one",items:[],index:0,answerVisible:false,explanationVisible:false};
+const random=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){let j=random(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+
+function factor(n,role,blank=false){
+  const label=role==="multiplicand"?"かけられる数":"かける数";
+  return `<span class="factor ${role}"><span class="factor-label">${label}</span><span class="factor-value ${blank?"blank-value":""}">${blank&&!state.answerVisible?"□":n}</span></span>`;
+}
+function plainBlank(){return `<span class="plain-blank">${state.answerVisible?state.currentAnswer:"□"}</span>`}
+function makeOne(a,b){
+  return {kind:"one",a,b,answer:a,
+    explanation:`かける数が ${b-1} から ${b} に1ふえると、答えはかけられる数の ${a} だけふえます。だから、□には ${a} が入ります。`,
+    html:()=>`${factor(a,"multiplicand")}<span class="symbol">×</span>${factor(b,"multiplier")}<span class="symbol">＝</span>${factor(a,"multiplicand")}<span class="symbol">×</span>${factor(b-1,"multiplier")}<span class="symbol">＋</span>${plainBlank()}`};
+}
+function makeTwo(a,b){
+  return {kind:"two",a,b,answer:a,
+    explanation:`かけられる数の ${a} と、かける数の ${b} を入れかえても、答えは同じです。だから、□には ${a} が入ります。`,
+    html:()=>`${factor(a,"multiplicand")}<span class="symbol">×</span>${factor(b,"multiplier")}<span class="symbol">＝</span>${factor(b,"multiplicand")}<span class="symbol">×</span>${factor(a,"multiplier",true)}`};
+}
+function createItems(mode){
+  const one=[],two=[];
+  for(let a=2;a<=9;a++){
+    for(let b=2;b<=9;b++){
+      one.push(makeOne(a,b));
+      if(a!==b)two.push(makeTwo(a,b));
+    }
+  }
+  if(mode==="one")return shuffle(one).slice(0,10);
+  if(mode==="two")return shuffle(two).slice(0,10);
+  return shuffle([...shuffle(one).slice(0,5),...shuffle(two).slice(0,5)]);
+}
+function setMode(mode){
+  state.mode=mode;
+  document.querySelectorAll(".mode").forEach(button=>button.classList.toggle("active",button.dataset.mode===mode));
+  $("modeName").textContent=mode==="one"?"きまり①":mode==="two"?"きまり②":"ごちゃまぜ";
+  startSet();
+}
+function startSet(){
+  state.items=createItems(state.mode);
+  state.index=0;
+  state.answerVisible=false;
+  state.answerVisible=false;
+  state.explanationVisible=false;
+  $("play").hidden=false;
+  $("showAnswer").disabled=false;
+  render();
+}
+function render(){
+  if(state.finished)return;
+  const item=state.items[state.index];
+  state.currentAnswer=item.answer;
+  $("count").textContent=`${state.index+1} / 10`;
+  $("progress").style.width=`${state.index/10*100}%`;
+  $("equation").innerHTML=item.html();
+  $("showAnswer").textContent=state.answerVisible?"答えをかくす":"答えを見る";
+  $("explanation").hidden=!state.explanationVisible;
+  $("explanation").textContent=state.explanationVisible?item.explanation:"";
+  $("readExplanation").textContent=state.explanationVisible?"せつめいをとじる":"せつめいをよむ";
+}
+function toggleAnswer(){
+  state.answerVisible=!state.answerVisible;
+  render();
+}
+function next(){
+  if(state.index<9){
+    state.index++;
+    state.answerVisible=false;
+    state.explanationVisible=false;
+    render();
+  }else{
+    // 10問目の次も止めず、新しい10問に進む
+    state.items=createItems(state.mode);
+    state.index=0;
+    state.answerVisible=false;
+    state.explanationVisible=false;
+    render();
+  }
+}
+document.querySelectorAll(".mode").forEach(button=>button.addEventListener("click",()=>setMode(button.dataset.mode)));
+$("showAnswer").addEventListener("click",toggleAnswer);
+$("readExplanation").addEventListener("click",()=>{
+  state.explanationVisible=!state.explanationVisible;
+  render();
+});
+$("next").addEventListener("click",next);
+$("projector").addEventListener("click",()=>{
+  document.body.classList.toggle("projector");
+  $("projector").textContent=document.body.classList.contains("projector")?"通常表示":"大きく表示";
+});
+setMode("one");
+</script>
+</body>
+</html>
