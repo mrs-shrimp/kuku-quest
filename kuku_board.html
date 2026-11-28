@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>九九掲示</title>
+<style>
+  :root {
+    --ink: #172033;
+    --muted: #647084;
+    --paper: #f5f7fb;
+    --panel: #ffffff;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --line: #dce3ee;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--ink);
+    background: var(--paper);
+    font-family: system-ui, -apple-system, "Noto Sans JP", "Yu Gothic", sans-serif;
+  }
+  button { font: inherit; cursor: pointer; }
+  .app { min-height: 100vh; display: flex; flex-direction: column; }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 18px 28px; background: #fff;
+    border-bottom: 1px solid var(--line);
+  }
+  h1 { margin: 0; font-size: clamp(20px, 2.3vw, 28px); letter-spacing: .04em; }
+  .header-note { color: var(--muted); font-size: 14px; }
+  main { width: min(1100px, 100%); margin: 0 auto; padding: 28px 24px 36px; flex: 1; }
+  .setup { display: grid; gap: 22px; }
+  .section-title { margin: 0 0 12px; font-size: 17px; }
+  .mode-grid, .dan-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .mode-btn, .dan-btn {
+    border: 2px solid var(--line); border-radius: 16px; background: #fff;
+    color: var(--ink); min-height: 76px; padding: 14px 18px;
+    font-weight: 700; transition: .15s ease;
+  }
+  .mode-btn { text-align: left; }
+  .mode-btn span { display: block; font-size: 18px; }
+  .mode-btn small { display: block; margin-top: 5px; color: var(--muted); font-weight: 500; font-size: 13px; }
+  .mode-btn.selected, .dan-btn.selected {
+    border-color: var(--accent); background: #eff6ff; color: var(--accent-dark);
+    box-shadow: 0 0 0 2px #dbeafe inset;
+  }
+  .dan-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .dan-btn { min-height: 64px; font-size: 23px; }
+  .start-row { display: flex; justify-content: center; padding-top: 4px; }
+  .primary {
+    border: 0; border-radius: 14px; background: var(--accent); color: white;
+    font-weight: 800; padding: 16px 44px; font-size: 18px;
+    box-shadow: 0 5px 0 var(--accent-dark);
+  }
+  .primary:active, .next:active { transform: translateY(2px); box-shadow: none; }
+  button:focus-visible { outline: 4px solid #f59e0b; outline-offset: 3px; }
+  .stage { display: none; }
+  .stage.active { display: flex; flex-direction: column; min-height: 65vh; }
+  .stage-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .stage-label { color: var(--muted); font-weight: 700; font-size: 16px; }
+  .progress { color: var(--accent-dark); font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .complete-message { text-align: center; }
+  .complete-message strong { display: block; font-size: clamp(36px, 7vw, 64px); color: #15803d; }
+  .complete-message span { display: block; margin-top: 12px; color: var(--muted); font-size: 20px; }
+  .change-btn {
+    border: 1px solid var(--line); background: white; border-radius: 10px;
+    padding: 10px 14px; color: var(--ink); font-weight: 700;
+  }
+  .display-card {
+    flex: 1; min-height: 340px; margin: 24px 0;
+    display: flex; align-items: center; justify-content: center;
+    background: white; border: 1px solid var(--line); border-radius: 24px;
+    box-shadow: 0 12px 35px rgba(31, 50, 80, .07);
+    padding: 24px;
+  }
+  .question {
+    font-weight: 800; font-size: clamp(64px, 12vw, 138px);
+    letter-spacing: .025em; line-height: 1.2; text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .question.answer { color: #b45309; }
+  .stage-bottom { display: flex; justify-content: center; }
+  .next {
+    min-width: min(360px, 100%); border: 0; border-radius: 16px;
+    padding: 19px 30px; background: var(--accent); color: white;
+    font-size: 23px; font-weight: 800; box-shadow: 0 6px 0 var(--accent-dark);
+  }
+  .hint { text-align: center; color: var(--muted); font-size: 14px; margin-top: 14px; }
+  .hidden { display: none !important; }
+  @media (max-width: 600px) {
+    header { padding: 14px 16px; }
+    .header-note { display: none; }
+    main { padding: 20px 15px 28px; }
+    .dan-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .mode-grid { grid-template-columns: 1fr; }
+    .display-card { min-height: 280px; }
+  }
+  @media (min-width: 900px) {
+    .stage.active { min-height: calc(100vh - 130px); }
+    .display-card { min-height: 430px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>九九掲示</h1>
+    <div class="header-note">大きく表示して、みんなで九九にちょうせん</div>
+  </header>
+  <main>
+    <section class="setup" id="setup">
+      <div>
+        <h2 class="section-title">① モードをえらぶ</h2>
+        <div class="mode-grid">
+          <button class="mode-btn selected" data-mode="question" type="button">
+            <span>ランダム九九モード</span>
+            <small>式が１つずつランダムに出ます</small>
+          </button>
+          <button class="mode-btn" data-mode="answer" type="button">
+            <span>答えから九九モード</span>
+            <small>答えだけが１つずつランダムに出ます</small>
+          </button>
+        </div>
+      </div>
+      <div>
+        <h2 class="section-title">② だんをえらぶ</h2>
+        <div class="dan-grid" id="danGrid"></div>
+        <div style="margin-top:12px">
+          <button class="dan-btn" id="allDanBtn" type="button" style="width:100%">ぜんぶのだん</button>
+        </div>
+        <div id="countOptions" class="hidden" style="margin-top:18px">
+          <h2 class="section-title">③ １セットの問題数</h2>
+          <div class="dan-grid" id="countGrid" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+            <button class="dan-btn selected" type="button" data-count="10">10問</button>
+            <button class="dan-btn" type="button" data-count="20">20問</button>
+            <button class="dan-btn" type="button" data-count="30">30問</button>
+            <button class="dan-btn" type="button" data-count="81">81問</button>
+          </div>
+        </div>
+        <div id="timerOptions" class="hidden" style="margin-top:18px">
+          <h2 class="section-title">④ タイマー</h2>
+          <div class="mode-grid">
+            <button class="mode-btn selected" id="timerOff" type="button">
+              <span>OFF</span><small>自分のペースで進める</small>
+            </button>
+            <button class="mode-btn" id="timerOn" type="button">
+              <span>ON</span><small>時間が来ると自動で次へ</small>
+            </button>
+          </div>
+          <div id="timerSecondsOptions" class="hidden" style="margin-top:14px">
+            <h2 class="section-title">１問あたりの時間</h2>
+            <div class="dan-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+              <button class="dan-btn selected" type="button" data-seconds="3">3秒</button>
+              <button class="dan-btn" type="button" data-seconds="2">2秒</button>
+              <button class="dan-btn" type="button" data-seconds="1">1秒</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="start-row">
+        <button class="primary" id="startBtn" type="button">はじめる</button>
+      </div>
+    </section>
+
+    <section class="stage" id="stage" aria-live="polite">
+      <div class="stage-top">
+        <div>
+          <div class="stage-label" id="stageLabel">３のだん・ランダム九九</div>
+          <div class="progress" id="progress">1 / 9</div>
+          <div id="timerDisplay" class="hidden" style="margin-top:6px;font-size:16px;font-weight:800;color:#b45309;font-variant-numeric:tabular-nums"></div>
+        </div>
+        <button class="change-btn" id="backBtn" type="button">モード・だんをえらびなおす</button>
+      </div>
+      <div class="display-card">
+        <div class="question" id="questionDisplay">３ × ２ ＝ ？</div>
+      </div>
+      <div class="stage-bottom">
+        <button class="next" id="nextBtn" type="button">つぎへ</button>
+      </div>
+      <p class="hint">「つぎへ」を押すと、次の問題が出ます。</p>
+    </section>
+  </main>
+</div>
+<script>
+(() => {
+  const setup = document.getElementById('setup');
+  const stage = document.getElementById('stage');
+  const danGrid = document.getElementById('danGrid');
+  const questionDisplay = document.getElementById('questionDisplay');
+  const stageLabel = document.getElementById('stageLabel');
+  let mode = 'question';
+  let dan = 3;
+  let allDan = false;
+  let setSize = 10;
+  let deck = [];
+  let completedCount = 0;
+  let finished = false;
+  let timerEnabled = false;
+  let timerSeconds = 3;
+  let timerInterval = null;
+  let remainingSeconds = 0;
+  const progress = document.getElementById('progress');
+  const nextBtn = document.getElementById('nextBtn');
+  const timerDisplay = document.getElementById('timerDisplay');
+
+  for (let n = 1; n <= 9; n++) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'dan-btn' + (n === dan ? ' selected' : '');
+    button.textContent = `${n} のだん`;
+    button.dataset.dan = n;
+    button.addEventListener('click', () => {
+      dan = n;
+      allDan = false;
+      danGrid.querySelectorAll('.dan-btn').forEach(b =>
+        b.classList.toggle('selected', Number(b.dataset.dan) === dan)
+      );
+      document.getElementById('allDanBtn').classList.remove('selected');
+      document.getElementById('countOptions').classList.add('hidden');
+      document.getElementById('timerOptions').classList.add('hidden');
+      timerEnabled = false;
+      document.getElementById('timerOff').classList.add('selected');
+      document.getElementById('timerOn').classList.remove('selected');
+      document.getElementById('timerSecondsOptions').classList.add('hidden');
+    });
+    danGrid.appendChild(button);
+  }
+
+  document.getElementById('allDanBtn').addEventListener('click', () => {
+    allDan = true;
+    danGrid.querySelectorAll('.dan-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('allDanBtn').classList.add('selected');
+    document.getElementById('countOptions').classList.remove('hidden');
+    document.getElementById('timerOptions').classList.remove('hidden');
+  });
+
+  document.querySelectorAll('#countGrid .dan-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      setSize = Number(button.dataset.count);
+      document.querySelectorAll('#countGrid .dan-btn').forEach(b =>
+        b.classList.toggle('selected', b === button)
+      );
+    });
+  });
+
+  document.getElementById('timerOff').addEventListener('click', () => {
+    timerEnabled = false;
+    document.getElementById('timerOff').classList.add('selected');
+    document.getElementById('timerOn').classList.remove('selected');
+    document.getElementById('timerSecondsOptions').classList.add('hidden');
+  });
+
+  document.getElementById('timerOn').addEventListener('click', () => {
+    timerEnabled = true;
+    document.getElementById('timerOn').classList.add('selected');
+    document.getElementById('timerOff').classList.remove('selected');
+    document.getElementById('timerSecondsOptions').classList.remove('hidden');
+  });
+
+  document.querySelectorAll('#timerSecondsOptions .dan-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      timerSeconds = Number(button.dataset.seconds);
+      document.querySelectorAll('#timerSecondsOptions .dan-btn').forEach(b =>
+        b.classList.toggle('selected', b === button)
+      );
+    });
+  });
+
+  document.querySelectorAll('.mode-btn[data-mode]').forEach(button => {
+    button.addEventListener('click', () => {
+      mode = button.dataset.mode;
+      document.querySelectorAll('.mode-btn[data-mode]').forEach(b =>
+        b.classList.toggle('selected', b === button)
+      );
+    });
+  });
+
+  function shuffle(values) {
+    const result = [...values];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+
+  function refillDeck() {
+    let items;
+    if (allDan) {
+      items = [];
+      for (let d = 1; d <= 9; d++) {
+        for (let m = 1; m <= 9; m++) {
+          items.push({ dan: d, multiplier: m });
+        }
+      }
+      deck = shuffle(items).slice(0, setSize);
+    } else {
+      items = Array.from({length: 9}, (_, i) => ({ dan, multiplier: i + 1 }));
+      deck = shuffle(items);
+    }
+  }
+
+  function stopTimer() {
+    if (timerInterval !== null) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  function startTimer() {
+    stopTimer();
+    if (!allDan || !timerEnabled || finished) {
+      timerDisplay.classList.add('hidden');
+      timerDisplay.textContent = '';
+      return;
+    }
+    remainingSeconds = timerSeconds;
+    timerDisplay.classList.remove('hidden');
+    timerDisplay.textContent = `のこり ${remainingSeconds} 秒`;
+    timerInterval = setInterval(() => {
+      remainingSeconds--;
+      if (remainingSeconds > 0) {
+        timerDisplay.textContent = `のこり ${remainingSeconds} 秒`;
+      } else {
+        stopTimer();
+        if (deck.length === 0) finishRound();
+        else showNext();
+      }
+    }, 1000);
+  }
+
+  function showNext() {
+    if (finished) return;
+    stopTimer();
+    if (deck.length === 0) {
+      finishRound();
+      return;
+    }
+    const item = deck.pop();
+    completedCount++;
+    const total = allDan ? setSize : 9;
+    progress.textContent = `${completedCount} / ${total}`;
+    if (mode === 'question') {
+      questionDisplay.className = 'question';
+      questionDisplay.textContent = `${item.dan} × ${item.multiplier} ＝ ？`;
+    } else {
+      questionDisplay.className = 'question answer';
+      questionDisplay.textContent = `${item.dan * item.multiplier}`;
+    }
+    nextBtn.textContent = completedCount === total ? 'おわり' : 'つぎへ';
+    startTimer();
+  }
+
+  function finishRound() {
+    finished = true;
+    stopTimer();
+    timerDisplay.classList.add('hidden');
+    const total = allDan ? setSize : 9;
+    progress.textContent = `${total} / ${total}`;
+    questionDisplay.className = 'complete-message';
+    questionDisplay.innerHTML = `<strong>ぜんぶできた！</strong><span>${total}問の九九がおわりました。</span>`;
+    nextBtn.textContent = 'もう一度';
+    nextBtn.onclick = restartRound;
+  }
+
+  function restartRound() {
+    stopTimer();
+    completedCount = 0;
+    finished = false;
+    refillDeck();
+    nextBtn.textContent = 'つぎへ';
+    nextBtn.onclick = showNext;
+    showNext();
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    stopTimer();
+    setup.classList.add('hidden');
+    stage.classList.add('active');
+    stageLabel.textContent = `${allDan ? 'ぜんぶのだん' : `${dan}のだん`}・${mode === 'question' ? 'ランダム九九モード' : '答えから九九モード'}`;
+    completedCount = 0;
+    finished = false;
+    nextBtn.textContent = 'つぎへ';
+    nextBtn.onclick = showNext;
+    refillDeck();
+    showNext();
+  });
+  document.getElementById('backBtn').addEventListener('click', () => {
+    stopTimer();
+    stage.classList.remove('active');
+    setup.classList.remove('hidden');
+    nextBtn.textContent = 'つぎへ';
+    nextBtn.onclick = showNext;
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.code === 'Space' && stage.classList.contains('active')) {
+      event.preventDefault();
+      if (!finished) showNext();
+    }
+  });
+})();
+</script>
+</body>
+</html>
